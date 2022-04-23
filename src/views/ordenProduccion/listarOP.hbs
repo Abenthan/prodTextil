@@ -1,0 +1,35 @@
+<div class="container">
+    <div class="row">
+        <div class="col mx-auto">
+            <div class="text-center my-4">
+                <h3>Ordenes de producción</h3>
+            </div>
+            <div class="my-2">
+                <a href="/home" class="btn btn-outline-info">Inicio</a>
+            </div>
+            <div class="my-2">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Consecutivo</th>
+                            <th>Nombre Producción</th>
+                            <th>Cantidad</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each ordenesProduccion}}
+                        <tr>
+                            <td>{{consecutivo}}</td>
+                            <td><a href="/ordenProduccion/procesosOP/{{idOP}}">{{nombreOP}}</a></td>
+                            <td>{{cantidadOP}}</td>
+                            <td>{{estadoOP}}</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="text-center my-4">
+                <h3>Programacion Orden de Produccion</h3>
+            </div>
+
+            <form action="/ordenProduccion/crear" method="post"> <!-- Formulario -->
+
+                <div class="form-group my-2"><!-- Nombre -->
+                    <label for="nombreOP">Nombre:</label>
+                    <input type="text" class="form-control" id="nombreOP" name="nombreOP"
+                        placeholder="Nombre de la Orden de Produccion">
+                </div>
+
+                <div class="form-group my-2"> <!-- consecutivo -->
+                    <label for="consecutivo">Consecutivo:</label>
+                    <input type="text" class="form-control" id="consecutivo" name="consecutivo"
+                        placeholder="Numero de la Orden de Produccion">
+                </div>
+
+                <div class="form-group my-2"> <!-- cantidadOP -->
+                    <label for="cantidadOP">Cantidad:</label>
+                    <input type="number" class="form-control" id="cantidadOP" name="cantidadOP" placeholder="Cantidad">
+                </div>
+
+                <div class="form-group my-2"> <!-- fecha -->
+                    <label for="fecha">Fecha:</label>
+                    <input type="date" class="form-control" id="fecha" name="fecha" placeholder="Fecha">
+                </div>
+
+                <div class="form-group my-2"> <!-- tipoProceso -->
+                    <label for="tipoProceso">Tipo de proceso:</label>
+                    <select class="form-control" id="tipoProceso" name="tipoProceso">
+                        <option value="">Seleccione una opcion</option>
+                        <option value="1">Diseño Textil</option>
+                        <option value="2">Flexo</option>
+                        <option value="3">Transfer</option>
+                        <option value="4">Garras</option>
+                    </select>
+                </div>
+
+                <div class="form-group my-2"> <!-- Procesos -->
+                    <ul id="procesos"></ul>
+                </div>
+
+                <div class="form-group my-2"> {{!-- Guardar --}}
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script src="/ordenProduccion/js/rutaProceso.js"></script>
