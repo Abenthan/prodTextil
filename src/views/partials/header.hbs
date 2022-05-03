@@ -1,0 +1,31 @@
+<div class="container-fluid bg-secondary">
+    <div class="row">
+        <div class="col d-flex justify-content-between flex-wrap">
+
+            <div class="p-1"> {{!-- logo --}}
+                <img src="/img/logo-mf-textil.png">
+            </div>
+
+            <div class="my-auto"> {{!-- usuario --}}
+                
+                {{#if user}}
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{user.fullname}}
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="/usuarios/logout">Cerrar Sesión</a>
+                        </div>
+                   </div>                
+                {{else}}
+                    <a href="/usuarios/login" class="btn btn-secondary">Iniciar Sesión</a>
+                {{/if}}
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>

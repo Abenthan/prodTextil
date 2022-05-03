@@ -4,11 +4,11 @@ const pool = require('../database');
 const helpers = require('../lib/helpers');
 
 passport.use('local.logIn', new LocalStrategy({
-    usernameField: 'email',
+    usernameField: 'username',
     passwordField: 'password',
     passReqToCallback: true
-}, async (req, email, password, done) => {
-    const rows = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+}, async (req, username, password, done) => {
+    const rows = await pool.query('SELECT * FROM usuarios WHERE username = ?', [username]);
     if (rows.length > 0) {
         const user = rows[0];
         const validPassword = await helpers.matchPassword(password, user.password);
