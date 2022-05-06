@@ -37,4 +37,14 @@ router.get('/logout', isLoggedIn, (req, res) => {
     res.redirect('/usuarios/logIn');
 });
 
+//GET: usuarios
+router.get('/listarUsuarios', async(req, res) => {
+    // consultar usuarios
+    const usuarios = await pool.query('SELECT * FROM usuarios');
+    res.render('usuarios/listarUsuarios', {usuarios});
+  
+});
+
+
+
 module.exports = router;

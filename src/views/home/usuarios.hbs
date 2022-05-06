@@ -1,16 +1,20 @@
 <div class="container">
     <div class="row">{{!-- Menu rutas --}}
         <div class="col">
-            <div>
-                <a href="/home">Home</a>
+            <div class="d-flex">
+                <a href="/home">Inicio</a>
             </div>
         </div>
     </div>
 
     <div class="row">
         <div class="col">
-            <div>
-                <a href="/usuarios/nuevoUsuario" class="btn btn-outline-info p-2 m-2">Agregar Usuario</a>
+            <div> {{!-- nuevoUsuario --}}
+                <a href="/usuarios/nuevoUsuario" class="btn btn-outline-info p-2 m-2">Nuevo Usuario</a>
+            </div>
+
+            <div>{{!-- Listar Usuarios --}}
+                <a href="/usuarios/listarUsuarios" class="btn btn-outline-info p-2 m-2">Listar Usuarios</a>
             </div>
 
         </div>
