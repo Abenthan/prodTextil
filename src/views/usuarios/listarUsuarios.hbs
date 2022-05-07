@@ -28,10 +28,10 @@
                     <tbody>
                         {{#each usuarios}}
                         <tr>
-                            <td>{{fullname}}</td>
+                            <td><a href="/usuarios/editarUsuario/{{idUsuario}}">{{fullname}}</a></td>
                             <td>{{username}}</td>
                             <td>{{perfilUsuario}}</td>
-                            <td><a href="#">Editar</a>&nbsp;<a href="#">Eliminar</a></td>
+                            <td><a href="/usuarios/editarUsuario/{{idUsuario}}">Editar</a></td>
                         </tr>
                         {{/each}}
                     </tbody>

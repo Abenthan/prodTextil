@@ -45,6 +45,25 @@ router.get('/listarUsuarios', async(req, res) => {
   
 });
 
+// GET: editarUsuario
+router.get('/editarUsuario/:id', async(req, res) => {
+    const {id} = req.params;
+    const usuario = await pool.query('SELECT * FROM usuarios WHERE idUsuario = ?', [id]);
+    res.render('usuarios/editarUsuario', {usuario: usuario[0]});
+});
 
+// POST: editarUsuario
+router.post('/editarUsuario/:id', async(req, res) => {
+    const {id} = req.params;
+    const {fullname, username, perfilUsuario} = req.body;
+    const newUsuario = {
+        fullname,
+        username,
+        perfilUsuario
+    };
+    await pool.query('UPDATE usuarios SET ? WHERE idUsuario = ?', [newUsuario, id]);
+    req.flash('success', 'Usuario actualizado correctamente');
+    res.redirect('/usuarios/listarUsuarios');   
+});
 
 module.exports = router;
