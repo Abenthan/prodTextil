@@ -1,7 +1,7 @@
 <div class="container">
     <div class="row d-flex align-content-between flex-wrap my-1 py-1">{{!-- Menu rutas --}}
         <div class="col">
-            <div class="d-flex">
+            <div class="d-flex"> {{!-- rutas --}}
                 <a href="/home">Home</a>
                 <p> &nbsp; / &nbsp;</p>
                 <a href="/home/usuarios">Usuarios</a>
@@ -9,9 +9,10 @@
                 <a href="/home/listarUsuarios">Lista de Usuarios</a>
             </div>
         </div>
-        <div class="col d-flex justify-content-end p-1">
-            <a href="#" class="btn btn-primary m-1"><i class="fa-solid fa-key"></i>&nbsp;Cambiar Contraseña</a>
-            <a href="#" class="btn btn-danger m-1"><i class="fa-solid fa-xmark"></i>&nbsp;Eliminar Usuario</a>
+
+        <div class="col d-flex justify-content-end p-1"> {{!-- Botones --}}
+            <a href="/usuarios/cambiarPassword/{{usuario.idUsuario}}" class="btn btn-primary m-1"><i class="fa-solid fa-key"></i>&nbsp;Cambiar Contraseña</a>
+            <a href="/usuarios/eliminarUsuario/{{usuario.idUsuario}}" class="btn btn-danger m-1"><i class="fa-solid fa-xmark"></i>&nbsp;Eliminar Usuario</a>
             
         </div>
     </div>

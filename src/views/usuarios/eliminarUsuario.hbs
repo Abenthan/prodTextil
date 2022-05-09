@@ -1,0 +1,44 @@
+<div class="container">
+    <div class="row d-flex align-content-between flex-wrap my-1 py-1">{{!-- Menu rutas --}}
+        <div class="col">
+            <div class="d-flex"> {{!-- rutas --}}
+                <a href="/home">Home</a>
+                <p> &nbsp; / &nbsp;</p>
+                <a href="/home/usuarios">Usuarios</a>
+                <p> &nbsp; / &nbsp;</p>
+                <a href="/usuarios/listarUsuarios">Lista de Usuarios</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h3>Eliminar Usuario</h3>
+                </div>
+                <div class="card-body">
+                    <form action="/usuarios/eliminarUsuario/{{usuario.idUsuario}}" method="POST">
+                        <div class="form-group py-2 my-2"> <!-- fullname -->
+                            <label for="fullname">Nombre completo:</label>
+                            <input type="text" name="fullname" placeholder="Nombre Completo" class="form-control"
+                            value="{{usuario.fullname}}" readonly>
+                        </div>
+
+                        <div class="form-group py-2 my-2"> <!-- username -->
+                            <label for="username">Nombre de usuario:</label>
+                            <input type="text" name="username" placeholder="Nombre de usuario" class="form-control"
+                            value="{{usuario.username}}" readonly>
+                        </div>
+
+                        <div class="form-group py-2 my-2 text-center"> {{!-- Boton Eliminar --}}
+                            <button type="submit" class="btn btn-danger mx-2">
+                                <i class="fa-solid fa-xmark"></i>&nbsp;Confirma Eliminar Usuario</button>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
