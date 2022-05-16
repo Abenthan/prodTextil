@@ -54,6 +54,7 @@ app.use('/home', require('./routes/home'));
 app.use('/usuarios', require('./routes/usuarios'));
 app.use('/operadores', require('./routes/operadores'));
 app.use('/ordenProduccion', require('./routes/ordenProduccion'));
+app.use('/procesos', require('./routes/procesos'));
 app.use('/produccion', require('./routes/produccion'));
 
 // public

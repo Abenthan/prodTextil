@@ -9,6 +9,11 @@
     <div class="row">
         <div class="col">
             <div>
+                <a href="/produccion/inicio" class="btn btn-outline-info p-2 m-2">Produccion</a>
+            </div>
+
+            {{#if user}}
+            <div>
                 <a href="/ordenProduccion/crear" class="btn btn-outline-info p-2 m-2">Crear Orden de Produccion</a>
             </div>
 
@@ -16,10 +21,7 @@
                 <a href="/ordenProduccion/listarOP" class="btn btn-outline-info p-2 m-2">Listar Ordenes de
                     Produccion</a>
             </div>
-
-            <div>
-                <a href="/produccion/inicio" class="btn btn-outline-info p-2 m-2">Produccion</a>
-            </div>
+            {{/if}}
 
         </div>
     </div>

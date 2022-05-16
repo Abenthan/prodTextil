@@ -1,35 +1,53 @@
 <div class="container">
+    <div class="row d-flex"> <!-- Menu rutas -->
+        <div class="col">
+            <div class="d-flex"> {{!-- rutas --}}
+                <a href="/home">Inicio</a>
+                <p> &nbsp; / &nbsp;</p>
+                <a href="/home/produccion">Menu Produccion</a>
+            </div>
+        </div>
+
+        <div class="col d-flex justify-content-end p-1"> {{!-- Botones --}}
+            <a href="/home/produccion" class="btn btn-primary m-1">Salir&nbsp;<i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+
+        </div>
+
+    </div>
+
     <div class="row">
         <div class="col-md-6 mx-auto">
-            <div class="text-center my-4">
-                <h3>Programacion Orden de Produccion</h3>
+            <div class="text-center my-4"> {{!-- titulo --}}
+                <h3>Crear Orden de Produccion</h3>
             </div>
 
-            <form action="/ordenProduccion/crear" method="post"> <!-- Formulario -->
+            <form action="/ordenProduccion/crear" method="post"><!-- Formulario -->
 
                 <div class="form-group my-2"><!-- Nombre -->
                     <label for="nombreOP">Nombre:</label>
                     <input type="text" class="form-control" id="nombreOP" name="nombreOP"
-                        placeholder="Nombre de la Orden de Produccion">
+                        placeholder="Nombre de la Orden de Produccion" required autofocus>
                 </div>
 
-                <div class="form-group my-2"> <!-- consecutivo -->
+                <div class="form-group my-2"><!-- consecutivo -->
                     <label for="consecutivo">Consecutivo:</label>
                     <input type="text" class="form-control" id="consecutivo" name="consecutivo"
-                        placeholder="Numero de la Orden de Produccion">
+                        placeholder="Numero de la Orden de Produccion" required>
                 </div>
 
-                <div class="form-group my-2"> <!-- cantidadOP -->
+                <div class="form-group my-2"><!-- cantidadOP -->
                     <label for="cantidadOP">Cantidad:</label>
-                    <input type="number" class="form-control" id="cantidadOP" name="cantidadOP" placeholder="Cantidad">
+                    <input type="number" class="form-control" id="cantidadOP" name="cantidadOP" placeholder="Cantidad"
+                        required>
                 </div>
 
                 <div class="form-group my-2"> <!-- fecha -->
                     <label for="fecha">Fecha:</label>
-                    <input type="date" class="form-control" id="fecha" name="fecha" placeholder="Fecha">
+                    <input type="date" class="form-control" id="fecha" name="fecha" placeholder="Fecha"
+                        value="{{fecha}}" required>
                 </div>
 
-                <div class="form-group my-2"> <!-- tipoProceso -->
+                <div class="form-group my-2"><!-- tipoProceso -->
                     <label for="tipoProceso">Tipo de proceso:</label>
                     <select class="form-control" id="tipoProceso" name="tipoProceso">
                         <option value="">Seleccione una opcion</option>
@@ -40,13 +58,12 @@
                     </select>
                 </div>
 
-                <div class="form-check form-switch my-2"> <!-- Procesos -->
- 
+                <div class="form-check form-switch my-2"><!-- Procesos -->
                     <ul id="procesos" style="list-style:none"></ul>
                 </div>
 
-                <div class="form-group my-2"> {{!-- Guardar --}}
-                    <button type="submit" class="btn btn-primary">Guardar</button>
+                <div class="form-group my-2 text-center"> {{!-- Guardar --}}
+                    <button type="submit" class="btn btn-success"><i class="fa-solid fa-check"></i>&nbsp;Guardar</button>
                 </div>
 
             </form>

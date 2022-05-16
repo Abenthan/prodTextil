@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const pool = require('../database');
-const {isLoggedIn, isNotLoggedIn} = require('../lib/auth');
+const {isLoggedIn, isNotLoggedIn} = require('../lib/sesiones');
 const helpers = require('../lib/helpers');
 
 //GET: nuevoUsuario
@@ -35,7 +35,7 @@ router.post('/logIn', isNotLoggedIn, (req, res, next) => {
 
 router.get('/logout', isLoggedIn, (req, res) => { 
     req.logOut();
-    res.redirect('/usuarios/logIn');
+    res.redirect('/produccion/inicio');
 });
 
 //GET: usuarios

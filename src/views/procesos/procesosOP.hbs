@@ -3,7 +3,8 @@
         <div class="col mx-auto">
             <div class="text-center my-4">
                 <h3>Procesos</h3>
-                <p>Consecutivo: <strong>{{OP.consecutivo}},</strong> Orden de Producción: <strong>{{OP.nombreOP}}</strong></p>
+                <p>Consecutivo: <strong>{{OP.consecutivo}},</strong> Orden de Producción:
+                    <strong>{{OP.nombreOP}}</strong></p>
             </div>
             <div class="my-2">
                 <a href="/home" class="btn btn-outline-info">Inicio</a>
@@ -14,17 +15,26 @@
                     <thead>
                         <tr>
                             <th>Proceso</th>
-                            <th>Cantidad</th>
                             <th>Estado</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {{#each procesosOP}}
-                        <tr>
+                        {{#each procesos}}
+                        <tr id="tr_{{nombreProceso}}">
                             <td>{{nombreProceso}}</td>
-                            <td>{{cantidadProceso}}</td>
                             <td>{{estadoProceso}}</td>
+                            <td id="tdEstado_{{nombreProceso}}"></td>
                         </tr>
+                        <script>
+                            //si nombreProceso es igual a "preProduccion" entonces se muestra el boton de "editar"
+                            if ("{{nombreProceso}}" == "preProduccion") 
+                            {
+                                document.getElementById("tdEstado_{{nombreProceso}}").innerHTML = `
+                                <a href="/procesos/editarProceso/{{idProceso}}" class="btn btn-outline-info">Editar</a>
+                                `;
+                            }
+                        </script>
                         {{/each}}
                     </tbody>
                 </table>

@@ -1,0 +1,131 @@
+<div class="container">
+    <div class="row d-flex align-content-between flex-wrap my-1">{{!-- Menu rutas --}}
+        <div class="col">
+            <div class="d-flex"> {{!-- rutas --}}
+                <a href="/home">Menu principal</a>
+                <p> &nbsp; / &nbsp;</p>
+                <a href="/home/Produccion">produccion</a>
+                <p> &nbsp; / &nbsp;</p>
+                <a href="/ordenProduccion/listarOP">Ordenes de produccion</a>
+                <p> &nbsp; / &nbsp;</p>
+                <a href="/procesos/procesosOP/{{proceso.idOP}}">Procesos</a>
+            </div>
+        </div>
+
+        <div class="col d-flex justify-content-end"> {{!-- Botones --}}
+            <a href="/home" class="btn btn-primary">Salir&nbsp;<i class="fa-solid fa-right-from-bracket"></i></a>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <h3 class="text-center">Editar Proceso</h3>
+        <div class="col-md-6 mx-auto">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h5 class="card-title">{{proceso.nombreProceso}}</h5>
+                </div>
+                <div class="card-body">
+                    <form action="#" method="post">
+
+                        <div class="form-group mb-2">{{!-- consecutivo OP --}}
+                            <label for="consecutivoOP">Consecutivo</label>
+                            <input type="text" class="form-control" id="consecutivoOP" name="consecutivoOP"
+                                value="{{proceso.consecutivo}}" readonly>
+                        </div>
+
+                        <div class="form-group mb-2">{{!-- nombreOP --}}
+                            <label for="nombreOP">Nombre de la Orden de Produccion</label>
+                            <input type="text" class="form-control" id="nombreOP" name="nombreOP"
+                                value="{{proceso.nombreOP}}" readonly>
+                        </div>
+
+                        <div class="form-group mb-2"> {{!-- medidaIN --}}
+                            <label for="medidaIN">Unidad de Medida de entrada</label>
+                            <select name="medidaIN" class="form-control" id="medidaIN">
+                                <option value="unidades">Unidades</option>
+                                <option value="metros">Metros</option>
+                                <option value="matrices">Matrices</option>
+                                <option value="indefinido">Indefinido</option>
+                            </select>
+                            <script>
+                                document.getElementById('medidaIN').value = "{{proceso.medidaIN}}";
+                            </script>
+                        </div>
+
+                        <div class="form-group mb-2"> {{!-- CantidadIN --}}
+                            <label for="cantidadIN">Cantidad Entrada</label>
+                            <input type="number" class="form-control" id="cantidadIN" name="cantidadIN" value="{{proceso.cantidadIN}}">
+                        </div>
+
+                        <div class="form-group mb-2"> {{!-- medidaOUT --}}
+                            <label for="medidaOUT">Unidad de Medida de Salida</label>
+                            <select name="medidaOUT" class="form-control" id="medidaOUT">
+                                <option value="unidades">Unidades</option>
+                                <option value="metros">Metros</option>
+                                <option value="matrices">Matrices</option>
+                                <option value="indefinido">Indefinido</option>
+
+                            </select>
+                            <script>
+                                document.getElementById('medidaOUT').value = "{{proceso.medidaOUT}}";
+                            </script>
+                        </div>                        
+
+                        <div class="form-group mb-2"> {{!-- CantidadOUT --}}
+                            <label for="cantidadOUT">Cantidad Salida</label>
+                            <input type="number" class="form-control" id="cantidadOUT" name="cantidadOUT" value="{{proceso.cantidadOUT}}">
+                        </div>
+
+                        <div class="form-group mb-2"> {{!-- estado --}}
+                            <label for="estado">Estado del proceso</label>
+                            <select name="estado" class="form-control" id="estado">
+                                <option value="en Proceso">en Proceso</option>
+                                <option value="Terminado">Finalizado</option>
+                            </select>
+                            <script>
+                                document.getElementById('estado').value = "{{proceso.estadoProceso}}";
+                            </script>
+                        </div>
+
+                        <div class="form-group mb-2">{{!-- Observaciones --}}
+                            <label for="observaciones">Observaciones</label>
+                            <textarea name="observaciones" class="form-control"
+                                id="observaciones">{{proceso.observacionesProceso}}</textarea>
+                        </div>
+
+                        <div class="form-group text-center"> {{!-- Boton --}}
+                            <button type="submit" class="btn btn-success">Guardar</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // si nombreProceso = "preProduccion" entonces poner input medidaIN cantidadIN solo lectura
+    if ("{{proceso.nombreProceso}}" == "preProduccion") {
+        document.getElementById('medidaIN').disabled = true;
+        document.getElementById('cantidadIN').disabled = true;
+        document.getElementById('medidaOUT').value = "matrices";
+        //obtener enfoque en cantidadOUT
+        document.getElementById('cantidadOUT').focus();
+
+    }
+
+    const tx = document.getElementsByTagName("textarea");
+    for (let i = 0; i < tx.length; i++) {
+        tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+        tx[i].addEventListener("input", OnInput, false);
+    }
+
+    function OnInput() {
+        this.style.height = "auto";
+        this.style.height = (this.scrollHeight) + "px";
+    }
+
+</script>
