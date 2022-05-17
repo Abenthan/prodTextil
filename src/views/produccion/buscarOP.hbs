@@ -1,6 +1,14 @@
 <div class="container">
+    <div class="row d-flex align-content-between flex-wrap my-1">{{!-- Menu rutas --}}
+
+        <div class="col d-flex justify-content-end"> {{!-- Botones --}}
+            <a href="/produccion/inicio" class="btn btn-danger">Salir&nbsp;<i class="fa-solid fa-right-from-bracket"></i></a>
+
+        </div>
+    </div>
+
     <div class="row">
-        <div class="col">
+        <div class="col-md-6 mx-auto">
             <div class="text-center my-4">
                 <h3>{{operador.nombreOperador}}</h3>
             </div>
@@ -9,14 +17,13 @@
                     <h3>Orden de producción</h3>
                 </div>
                 <div class="card-body">
-                    <form action="/produccion/buscarProceso" method="post">
+                    <form action="/produccion/buscarOP" method="post">
                         <div class="form-group py-2 my-2">
                             <input type="text" name="consecutivoOP" placeholder="Orden de produccion"
                                 class="form-control" autofocus required>
                         </div>
                         <div class="form-group py-2 my-2 text-center">
                             <button type="submit" class="btn btn-primary">Buscar</button>
-                             <a href="/produccion/inicio" class="btn btn-outline-info">Salir</a>
                         </div>
                     </form>
                 </div>

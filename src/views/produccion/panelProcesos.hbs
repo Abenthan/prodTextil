@@ -1,0 +1,50 @@
+<div class="container">
+    <div class="row d-flex align-content-between flex-wrap my-1">{{!-- Menu rutas --}}
+
+        <div class="col d-flex justify-content-end"> {{!-- Botones --}}
+            <a href="/produccion/inicio" class="btn btn-danger">Salir&nbsp;<i
+                    class="fa-solid fa-right-from-bracket"></i></a>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col mx-auto">
+            <div class="d-flex">
+                <div>
+                    <p class="h4">Procesos de: </p>
+                </div>
+                <div class="d-flex align-content-end flex-wrap">
+                    <p class="h5">&nbsp;{{OP.nombreOP}}&nbsp;</p>
+                    <p class="h5">-&nbsp;consecutivo:&nbsp;<i><strong>{{OP.consecutivo}}</strong></i></p>
+                </div>
+            </div>
+
+            <div class="my-2">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Procesos</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody_procesos">
+                        {{#each procesos}}
+                        <script>
+                            if ("{{estadoProceso}}" == "en cola") {
+                                // insertar fila en la tabla
+                                var fila = document.createElement("tr");
+                                fila.innerHTML = '<td>{{nombreProceso}}</td>';
+                                fila.innerHTML += '<td><a href="#" class="btn btn-outline-info">Iniciar</a></td>';
+                                document.getElementById("tbody_procesos").appendChild(fila);
+                            }
+                        </script>
+
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
