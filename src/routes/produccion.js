@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../database');
 const moment = require('moment');
+const helpers = require('../lib/helpers');
 const { sesionOperador, sesionOP } = require('../lib/sesiones');
 
 async function actualizarEstadoProcesos(idOP, cantidadOP) {
@@ -117,40 +118,6 @@ router.get('/panelProcesos', sesionOperador, sesionOP, async (req, res) => {
     res.render('produccion/panelProcesos', { procesos, OP});
 });
 
-//GET seleccionarProceso
-router.get('/seleccionarProceso', sesionOperador, sesionOP, async (req, res) => {
-    const operador = req.session.operador;
-    const ordenProduccion = req.session.ordenProduccion;
-    const idOP = ordenProduccion.idOP;
-    //buscamos en procesos idOP con columna nombreProceso = 'preProduccion' y estadoProceso = 'en Proceso' 
-    const resultadoProcesos = await pool.query('SELECT * FROM procesos WHERE idOP = ? AND nombreProceso = ? AND estadoProceso = ?', [idOP, 'preProduccion', 'en Proceso']);
-    if (resultadoProcesos.length > 0) {
-        // enviar a preProduccion
-        res.redirect('/produccion/preProduccion');
-    } else {
-        // buscamos en produccion idOP y con columna inicio = null inner join procesos
-        const procesosParaIniciar = await pool.query('SELECT * FROM produccion INNER JOIN procesos ON produccion.idProceso = procesos.idProceso WHERE produccion.idOP = ? AND inicio IS NULL', [idOP]);
-
-        if (procesosParaIniciar.length > 0) {
-            res.render('produccion/seleccionarProceso', { operador, ordenProduccion, procesosParaIniciar });
-
-        } else {
-            req.flash('message', 'La orden de producción no tiene procesos para iniciar');
-            res.redirect('/produccion/panelOperador');
-        }
-    }
-});
-
-// POST seleccionarProceso
-router.post('/seleccionarProceso/', async (req, res) => {
-    const produccionParaConfirmar = {
-        idOperador: req.session.operador.idOperador,
-        idProduccion: req.body.idProduccion,
-        cantidad: req.body.cantidad
-    }
-    res.redirect('/produccion/confirmarProduccion/' + produccionParaConfirmar.idProduccion);
-});
-
 // GET confirmarFinalizacion
 router.get('/confirmarFinalizacion/:idProduccion', async (req, res) => {
     const idProduccion = req.params.idProduccion;
@@ -248,15 +215,53 @@ router.post('/confirmarFinalizacion', async (req, res) => {
 });
 
 //GET confirmarProduccion
-router.get('/confirmarProduccion/:idProduccion', async (req, res) => {
-    const idProduccion = req.params.idProduccion;
+router.get('/iniciarProduccion/:idProceso', sesionOperador, sesionOP, async (req, res) => {
+    const idProceso = req.params.idProceso;
     const operador = req.session.operador;
     const ordenProduccion = req.session.ordenProduccion;
-    //buscar produccion con idProduccion con inner join procesos
-    const resultadoProduccion = await pool.query('SELECT * FROM produccion INNER JOIN procesos ON produccion.idProceso = procesos.idProceso WHERE produccion.idProduccion = ?', [idProduccion]);
-    const produccion = resultadoProduccion[0];
-    res.render('produccion/confirmarProduccion', { operador, ordenProduccion, produccion });
+    //buscar idProceso en procesos
+    const resultadoProceso = await pool.query('SELECT * FROM procesos WHERE idProceso = ?', [idProceso]);
+    if (resultadoProceso.length > 0) {
+        const proceso = resultadoProceso[0];
+        res.render('produccion/iniciarProduccion', { operador, ordenProduccion, proceso });
+    } else {
+        req.flash('message', 'ERROR FATAL: No se encontro el proceso, porfavor intente nuevamente');
+        res.redirect('/produccion/inicio');
+    }
+
 });
+
+//POST iniciarProduccion
+router.post('/iniciarProduccion/:idProceso', sesionOperador, sesionOP, async (req, res) => {
+    const idProceso = req.params.idProceso;
+    const operador = req.session.operador;
+    const ordenProduccion = req.session.ordenProduccion;
+    const medida = helpers.unidadesMedida(ordenProduccion.tipoProceso, req.body.nombreProceso)
+     const datosProduccion = {
+        inicio: moment().format('YYYY-MM-DD HH:mm:ss'),
+        medidaIN: medida.in,
+        cantidadIN: req.body.cantidad,
+        idOP: ordenProduccion.idOP,
+        idProceso: idProceso,
+        idOperador: operador.idOperador
+    };
+    //insertamos en produccion el nuevo registro
+    const produccionInsertada = await pool.query('INSERT INTO produccion SET ?', [datosProduccion]);
+
+    //consultamos la cantidadIN del proceso
+    //const cantidadActual = await pool.query('SELECT cantidadIN FROM procesos WHERE idProceso = ?', [idProceso]);
+
+    const proceso = {
+        medidaIN: medida.in,
+        cantidadIN: req.body.cantidad,
+        estadoProceso: 'en Proceso'
+    };  
+
+    const updateProceso = await pool.query('UPDATE procesos SET medidaIN = ?, cantidadIN = cantidadIN + ?, estadoProceso = "en Proceso" WHERE idProceso = ?', [proceso.medidaIN, proceso.cantidadIN, idProceso]);
+    req.flash('success', 'La produccion se inicio correctamente');
+    res.redirect('/produccion/inicio');
+  });
+
 
 //POST confirmarProduccion
 router.post('/confirmarProduccion', async (req, res) => {

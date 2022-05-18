@@ -23,32 +23,35 @@ router.get('/editarProceso/:idProceso', async (req, res) => {
 router.post('/editarProceso/:idProceso', async (req, res) => {
 
     const { idProceso } = req.params;
-    const proceso = { 
-        medidaIN: req.body.medidaIN,
-        cantidadIN: req.body.cantidadIN,
+    const proceso = {
         medidaOUT: req.body.medidaOUT,
         cantidadOUT: req.body.cantidadOUT,
         estadoProceso: req.body.estado,
         observacionesProceso: req.body.observaciones
     };
-    await pool.query('UPDATE procesos SET ? WHERE idProceso = ?', [proceso, idProceso]);
     
-    const resultadoOP = await pool.query('SELECT * FROM procesos INNER JOIN ordenproduccion ON procesos.idOP = ordenproduccion.idOP WHERE idProceso = ?', [idProceso]);
-    // SI tipoproceso = 1 y nombreProceso= "preProduccion" y estadoProceso = "Terminado"
-    if (resultadoOP[0].tipoProceso == 1 && resultadoOP[0].nombreProceso == "preProduccion" && resultadoOP[0].estadoProceso == "Terminado") {
-        //actualizar estado de telares a "en cola"
-        console.log("actualiza estado telares a en cola");
-        await pool.query('UPDATE procesos SET estadoProceso = "en Cola" WHERE idOP = ? AND nombreProceso LIKE ?', [resultadoOP[0].idOP, '%telar%']);
-    }else{
-        if (resultadoOP[0].tipoProceso == 1 && resultadoOP[0].nombreProceso == "preProduccion" && resultadoOP[0].estadoProceso != "Terminado") { 
-        //actualizar estado de telares a "pendiente" 
-        console.log("actualiza estado telares a pendiente");
-        await pool.query('UPDATE procesos SET estadoProceso = "Pendiente" WHERE idOP = ? AND nombreProceso LIKE ?', [resultadoOP[0].idOP, '%telar%']);       
-        }
-    }
+    // si proceso es mayor igual a 0, actualizamos
+    if (proceso.cantidadOUT >= 0) {
+        await pool.query('UPDATE procesos SET ? WHERE idProceso = ?', [proceso, idProceso]);
 
-    req.flash('success', 'Proceso actualizado correctamente');
+        const resultadoOP = await pool.query('SELECT * FROM procesos INNER JOIN ordenproduccion ON procesos.idOP = ordenproduccion.idOP WHERE idProceso = ?', [idProceso]);
+        // SI tipoproceso = 1 y nombreProceso= "preProduccion" y estadoProceso = "Terminado"
+        if (resultadoOP[0].tipoProceso == 1 && resultadoOP[0].nombreProceso == "preProduccion" && resultadoOP[0].estadoProceso == "Terminado") {
+            //actualizar estado de telares a "en cola"
+            await pool.query('UPDATE procesos SET estadoProceso = "en Cola" WHERE idOP = ? AND nombreProceso LIKE ?', [resultadoOP[0].idOP, '%telar%']);
+        } else {
+            if (resultadoOP[0].tipoProceso == 1 && resultadoOP[0].nombreProceso == "preProduccion" && resultadoOP[0].estadoProceso != "Terminado") {
+                //actualizar estado de telares a "pendiente" 
+                await pool.query('UPDATE procesos SET estadoProceso = "Pendiente" WHERE idOP = ? AND nombreProceso LIKE ?', [resultadoOP[0].idOP, '%telar%']);
+            }
+        };
+
+        req.flash('success', 'Proceso actualizado correctamente');
+    } else {
+        req.flash('message', 'La cantidad debe ser mayor o igual a 0');
+    };
     res.redirect('/procesos/editarProceso/' + idProceso);
+
 });
 
 

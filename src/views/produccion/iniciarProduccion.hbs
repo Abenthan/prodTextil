@@ -1,0 +1,43 @@
+<div class="container">
+    <div class="row d-flex align-content-between flex-wrap my-1">{{!-- Menu rutas --}}
+
+        <div class="col d-flex justify-content-end"> {{!-- Botones --}}
+            <a href="/produccion/inicio" class="btn btn-danger">Salir&nbsp;<i
+                    class="fa-solid fa-right-from-bracket"></i></a>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col text-center">
+            <h4>Iniciar Produccion</h4>
+            <p class="h5">Orden de Producción:&nbsp;&nbsp;<strong>{{ordenProduccion.consecutivo}}</strong>&nbsp;-&nbsp;<i>{{ordenProduccion.nombreOP}}</i></p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title text-center">{{proceso.nombreProceso}}</h5>
+                </div>
+                <div class="card-body">
+                    <form action="/produccion/iniciarProduccion/{{proceso.idProceso}}" method="post">
+
+                        <div class="form-group"> {{!-- cantidad --}}
+                            <label for="cantidad">Cantidad</label>
+                            <input type="number" name="cantidad" class="form-control" autofocus>
+                        </div>
+                        {{!-- idOP, idProceso e idProduccion ocultos --}}
+                        <input type="hidden" name="idProceso" value="{{produccion.idProceso}}">
+                        <input type="hidden" name="nombreProceso" value="{{proceso.nombreProceso}}">
+
+                        <div class="form-group py-2 my-2 d-flex justify-content-center"> {{!-- boton confirmar --}}
+                            <button type="submit" class="btn btn-success">Iniciar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

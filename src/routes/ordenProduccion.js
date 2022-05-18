@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../database');
+const helpers = require('../lib/helpers');
 const moment = require('moment');
 
 //GET: crear
@@ -19,6 +20,7 @@ router.post('/crear', async (req, res) => {
         tipoProceso: req.body.tipoProceso,
         estadoOP: 'Pendiente',
     };
+
     // buscamos si existe el consucutivo
     const op = await pool.query('SELECT * FROM ordenProduccion WHERE consecutivo = ?', [datosOP.consecutivo]);
     if (op.length > 0) {
@@ -44,7 +46,16 @@ router.post('/crear', async (req, res) => {
                         if (req.body[tejido[i]]) {
                             ordenRuta++;
                             cantidad = 0;
-                            procesosOP.push({ nombreProceso: tejido[i], ordenRuta: ordenRuta, cantidadProceso: cantidad, estadoProceso: 'Pendiente' });
+                            procesosOP.push({ 
+                                nombreProceso: tejido[i],
+                                ordenRuta: ordenRuta,
+                                medidaIN: helpers.unidadesMedida(datosOP.tipoProceso, tejido[i]).in,
+                                cantidadIN: cantidad,
+                                medidaOUT: helpers.unidadesMedida(datosOP.tipoProceso, tejido[i]).out,
+                                cantidadOUT: cantidad,
+                                estadoProceso: 'Pendiente',
+                                observacionesProceso: ''
+                            });
                         }
                     }
                     break;

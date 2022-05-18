@@ -31,11 +31,11 @@
                     <tbody id="tbody_procesos">
                         {{#each procesos}}
                         <script>
-                            if ("{{estadoProceso}}" == "en cola") {
+                            if ("{{estadoProceso}}" == "en Cola") {
                                 // insertar fila en la tabla
                                 var fila = document.createElement("tr");
                                 fila.innerHTML = '<td>{{nombreProceso}}</td>';
-                                fila.innerHTML += '<td><a href="#" class="btn btn-outline-info">Iniciar</a></td>';
+                                fila.innerHTML += '<td><a href="/produccion/iniciarProduccion/{{idProceso}}" class="btn btn-outline-info">Iniciar</a></td>';
                                 document.getElementById("tbody_procesos").appendChild(fila);
                             }
                         </script>
