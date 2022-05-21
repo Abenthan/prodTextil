@@ -77,9 +77,15 @@ router.post('/inicio', async (req, res) => {
 // GET panelOperador
 router.get('/panelOperador', sesionOperador, async (req, res) => {
     const operador = req.session.operador;
+    // consulta anterior: SELECT * FROM produccion INNER JOIN procesos ON produccion.idProceso = procesos.idProceso INNER JOIN ordenProduccion ON produccion.idOP = ordenProduccion.idOP WHERE idOperador = ? AND inicio IS NOT NULL AND fin IS NULL'
+    const consultaSQL = 'SELECT ordenProduccion.consecutivo, procesos.nombreProceso, produccion.idProduccion, produccion.cantidadIN, produccion.medidaIN ' +
+        'FROM produccion ' +
+        'INNER JOIN procesos ON produccion.idProceso = procesos.idProceso ' +
+        'INNER JOIN ordenProduccion ON produccion.idOP = ordenProduccion.idOP ' +
+        'WHERE idOperador = ? AND inicio IS NOT NULL AND fin IS NULL';
 
     // buscamos en produccion idOperador, con columna inicio != null y con columna fin=null, con inner join idOP y idProceso
-    const produccionEnProceso = await pool.query('SELECT * FROM produccion INNER JOIN procesos ON produccion.idProceso = procesos.idProceso INNER JOIN ordenProduccion ON produccion.idOP = ordenProduccion.idOP WHERE idOperador = ? AND inicio IS NOT NULL AND fin IS NULL', [operador.idOperador]);
+    const produccionEnProceso = await pool.query(consultaSQL, [operador.idOperador]);
 
     res.render('produccion/panelOperador', { produccionEnProceso, operador });
 });
@@ -106,7 +112,8 @@ router.post('/buscarOP', async (req, res) => {
         res.redirect('/produccion/panelOperador');
     }
 });
- // GET panelProcesos
+
+// GET panelProcesos
 router.get('/panelProcesos', sesionOperador, sesionOP, async (req, res) => {
     const operador = req.session.operador;
     const OP = req.session.ordenProduccion;
@@ -115,101 +122,81 @@ router.get('/panelProcesos', sesionOperador, sesionOP, async (req, res) => {
     // buscamos en procesos idOP
     const procesos = await pool.query('SELECT * FROM procesos WHERE idOP = ?', [idOP]);
 
-    res.render('produccion/panelProcesos', { procesos, OP});
+    res.render('produccion/panelProcesos', { procesos, OP });
 });
 
 // GET confirmarFinalizacion
-router.get('/confirmarFinalizacion/:idProduccion', async (req, res) => {
+router.get('/confirmarFinalizacion/:idProduccion', sesionOperador, async (req, res) => {
     const idProduccion = req.params.idProduccion;
     const operador = req.session.operador;
-    if (operador.idOperador) {
-        const resultadoProduccion = await pool.query('SELECT * FROM produccion INNER JOIN ordenProduccion ON produccion.idOP = ordenProduccion.idOP INNER JOIN procesos ON produccion.idproceso = procesos.idProceso WHERE idProduccion = ?', [idProduccion]);
-        const produccion = resultadoProduccion[0];
-        console.log(produccion);
-        res.render('produccion/confirmarFinalizacion', { operador, produccion });
-    } else {
-        req.flash('message', 'Operador no encontradoLa produccion NO finalizo correctamente, porfavor intente nuevamente');
-        res.redirect('/produccion/inicio');
-    }
+
+    const consultaSQL = 'SELECT * ' +
+    'FROM produccion ' +
+    'INNER JOIN procesos ON produccion.idProceso = procesos.idProceso ' +
+    'INNER JOIN ordenproduccion ON produccion.idOP = ordenproduccion.idOP ' +
+    'WHERE idProduccion = ' + idProduccion;
+
+    // buscamos en produccion idOperador, con columna inicio != null y con columna fin=null, con inner join idOP y idProceso
+    const resultadoProduccion = await pool.query(consultaSQL);
+
+
+    const produccion = resultadoProduccion[0];
+    res.render('produccion/confirmarFinalizacion', { operador, produccion });
+
 });
 
 // POST confirmarFinalizacion
 router.post('/confirmarFinalizacion', async (req, res) => {
-    const body = req.body;
-
-    // funcion para actualizar la produccion con fin = now()
-    async function actualizarProduccion(idProceso, cantidadRestante, idOP) {
-        // buscamos en producccion idProceso, con columna inicio = null
-        console.log('idProceso: ' + idProceso);
-        console.log('cantidadRestante: ' + cantidadRestante);
-        console.log('idOP: ' + idOP);
-
-        const resultadoProduccionNoIniciada = await pool.query('SELECT * FROM produccion WHERE idProceso = ? AND inicio IS NULL', [idProceso]);
-
-        console.log('resultadoProduccionNoIniciada' + resultadoProduccionNoIniciada);
-
-        if (resultadoProduccionNoIniciada.length > 0) {
-            const produccionNoIniciada = resultadoProduccionNoIniciada[0];
-
-            //actualizamos la produccion con la cantidad + cantidadRestante
-            const producccionActualizada = await pool.query('UPDATE produccion SET cantidad = ? WHERE idProduccion = ?', [produccionNoIniciada.cantidad + cantidadRestante, produccionNoIniciada.idProduccion]);
-
-        } else {
-            //insertamos en produccion nuevo registro con idOP, idProceso y cantidad = cantidadRestante
-            const produccionInsertada = await pool.query('INSERT INTO produccion (idOP, idProceso, cantidad) VALUES (?, ?, ?)', [idOP, idProceso, cantidadRestante]);
-
-        }
-
+    const {idProduccion, idProceso, idOP} = req.body;
+    const operador = req.session.operador;
+    const medida = helpers.unidadesMedida(req.body.tipoProceso, req.body.nombreProceso)
+    datosProduccion = {
+        fin: moment().format('YYYY-MM-DD HH:mm:ss'),
+        medidaOUT: medida.out,
+        cantidadOUT: req.body.cantidad
     }
+    // actualizar produccion
+    await pool.query('UPDATE produccion SET ? WHERE idProduccion = ?', [datosProduccion, idProduccion]);
 
-    //obtenemos la informacion de la produccion con proceso y ordenProduccion
-    const resultadoProduccion = await pool.query('SELECT * FROM produccion INNER JOIN ordenProduccion ON produccion.idOP = ordenProduccion.idOP INNER JOIN procesos ON produccion.idproceso = procesos.idProceso WHERE idProduccion = ?', [body.idProduccion]);
-    const produccion = resultadoProduccion[0];
+    // actualizar proceso
+    datosProceso = {
+        cantidadOUT: req.body.cantidad,
+        estadoProceso: 'Finalizado'
+    }
+    
+    consultaUpdteProceso = 'UPDATE procesos' +
+        ' SET procesos.cantidadOUT = procesos.cantidadOUT + ' + parseInt(req.body.cantidad) + ', procesos.estadoProceso = "en Cola"' + 
+        ' WHERE procesos.idProceso = ' + idProceso;
+    await pool.query(consultaUpdteProceso);
+    
+    // actualizar siguiente proceso
+    const ordenRuta = req.body.ordenRuta;
 
-    //comparamos bodi.cantidad y produccion.cantidad
-    if (body.cantidad == produccion.cantidad) {
-
-        //actualizamos la produccion con fin = now()
-        const produccionFin = await pool.query('UPDATE produccion SET fin = now() WHERE idProduccion = ?', [body.idProduccion]);
-        var siguienteOrdenRuta = produccion.ordenRuta + 1;
-
-        //buscamos en proceso el idProcesos con ordenRuta = siguienteOrdenRuta y idOP = produccion.idOP
-        const resultadoProcesoSiguiente = await pool.query('SELECT * FROM procesos WHERE ordenRuta = ? AND idOP = ?', [siguienteOrdenRuta, produccion.idOP]);
-
-        //si hay proceso siguiente
-        if (resultadoProcesoSiguiente.length > 0) {
-            const procesoSiguiente = resultadoProcesoSiguiente[0];
-
-
-            await actualizarProduccion(procesoSiguiente.idProceso, produccion.cantidad, produccion.idOP);
-        }
-        req.flash('success', 'La produccion finalizo correctamente');
-
-    } else {
-        if (body.cantidad < produccion.cantidad) {
-            //actualizamos la produccion con fin = now() y cantidad = body.cantidad
-            const produccionFin = await pool.query('UPDATE produccion SET fin = now(), cantidad = ? WHERE idProduccion = ?', [body.cantidad, body.idProduccion]);
-            const cantidadRestante = produccion.cantidad - body.cantidad;
-            await actualizarProduccion(produccion.idProceso, cantidadRestante, produccion.idOP);
-
-            var siguienteOrdenRuta = produccion.ordenRuta + 1;
-
-            //buscamos en proceso el idProcesos con ordenRuta = siguienteOrdenRuta y idOP = produccion.idOP
-            const resultadoProcesoSiguiente = await pool.query('SELECT * FROM procesos WHERE ordenRuta = ? AND idOP = ?', [siguienteOrdenRuta, produccion.idOP]);
-
-            //si hay proceso siguiente
-            if (resultadoProcesoSiguiente.length > 0) {
-                const procesoSiguiente = resultadoProcesoSiguiente[0];
-
-                await actualizarProduccion(procesoSiguiente.idProceso, body.cantidad, produccion.idOP);
+    if (req.body.nombreProceso.substring(0, 5) === 'telar') {
+        // consulto el valor de ordenRuta del siguiente proceso
+        const consultaSiguinteProceso = 'SELECT * FROM procesos' +
+            ' WHERE idOP = ' + idOP + 
+            ' AND nombreProceso NOT LIKE "%telar%" ' +
+            ' AND ordenRuta > ' + ordenRuta +
+            ' ORDER BY ordenRuta ASC LIMIT 1';
+        const siguienteProceso = await pool.query(consultaSiguinteProceso);
+        if (siguienteProceso.length > 0) {
+            const datosProceso2 = {
+                cantidadIN: parseInt(siguienteProceso[0].cantidadIN) + parseInt(req.body.cantidad)
+            };
+            // si estadoProceso es 'Pendiente' entonces cambio a 'en Cola'
+            if (siguienteProceso[0].estadoProceso === 'Pendiente') {
+                datosProceso2.estadoProceso = 'en Cola';
             }
-
-            req.flash('success', 'La produccion finalizo correctamente');
-        } else {
-            req.flash('message', 'ERROR FATAL: La cantidad ingresada es mayor a la cantidad de la produccion, porfavor intente nuevamente');
+            // actualizar el siguiente proceso
+            await pool.query('UPDATE procesos SET ? WHERE idProceso = ?', [datosProceso2, siguienteProceso[0].idProceso]);
+        }else{
+            console.log('No hay siguiente proceso despues de los telares, esto se presenta en finalizar produccion de telares con idProduccion: ' + idProduccion);
         }
+    }else{
+       // FALTA CODIGO: 'aqui se ingresa el codigo cuando no es telar'
     }
-    await actualizarEstadoProcesos(produccion.idOP, produccion.cantidadOP);
+    req.flash('success', 'Producción finalizada');    
     res.redirect('/produccion/inicio');
 
 });
@@ -237,7 +224,7 @@ router.post('/iniciarProduccion/:idProceso', sesionOperador, sesionOP, async (re
     const operador = req.session.operador;
     const ordenProduccion = req.session.ordenProduccion;
     const medida = helpers.unidadesMedida(ordenProduccion.tipoProceso, req.body.nombreProceso)
-     const datosProduccion = {
+    const datosProduccion = {
         inicio: moment().format('YYYY-MM-DD HH:mm:ss'),
         medidaIN: medida.in,
         cantidadIN: req.body.cantidad,
@@ -255,12 +242,12 @@ router.post('/iniciarProduccion/:idProceso', sesionOperador, sesionOP, async (re
         medidaIN: medida.in,
         cantidadIN: req.body.cantidad,
         estadoProceso: 'en Proceso'
-    };  
+    };
 
     const updateProceso = await pool.query('UPDATE procesos SET medidaIN = ?, cantidadIN = cantidadIN + ?, estadoProceso = "en Proceso" WHERE idProceso = ?', [proceso.medidaIN, proceso.cantidadIN, idProceso]);
     req.flash('success', 'La produccion se inicio correctamente');
     res.redirect('/produccion/inicio');
-  });
+});
 
 
 //POST confirmarProduccion
