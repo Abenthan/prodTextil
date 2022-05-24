@@ -23,10 +23,10 @@ router.post('/crear', async (req, res) => {
 
     // buscamos si existe el consucutivo
     const op = await pool.query('SELECT * FROM ordenProduccion WHERE consecutivo = ?', [datosOP.consecutivo]);
-    if (op.length > 0) {
+    if (op.length > 0) { //ya existe el consecutivo
         req.flash('message', 'El consecutivo ya existe');
         res.redirect('/ordenProduccion/crear');
-    } else {
+    } else { //no existe consecutivo
         if (datosOP.tipoProceso != '') {
             const tejido = ['diseño', 'ordenProduccion', 'preProduccion', 'telar1', 'telar2', 'telar4', 'telar5', 'telar6',
                 'enrrollado', 'planchado', 'corte', 'inspeccion', 'despacho'];
@@ -99,7 +99,7 @@ router.post('/crear', async (req, res) => {
             // insertamos datosOP en ordenProduccion
             const resultadoOP = await pool.query('INSERT INTO ordenProduccion SET ?', [datosOP]);
 
-            // agregamos a procesosOP el id insertado en la tabla ordenProduccion
+            // agregamos a procesosOP el id 
             for (let i = 0; i < procesosOP.length; i++) {
                 procesosOP[i].idOP = resultadoOP.insertId;
             }

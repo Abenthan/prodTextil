@@ -19,29 +19,35 @@
                         <div class="form-group py-2 my-2"> {{!-- consecutivoOP --}}
                             <label for="consecutivoOP">Orden de Producción</label>
                             <input type="text" name="consecutivoOP" class="form-control"
-                                value="{{produccion.consecutivo}}" readonly>
+                                value="{{proceso.consecutivo}}" readonly>
                         </div>
+
                         <div class="form-group py-2 my-2"> {{!-- nombreOP --}}
                             <label for="nombreOP">Nombre Orden de Producción</label>
-                            <input type="text" name="nombreOP" class="form-control" value="{{produccion.nombreOP}}"
+                            <input type="text" name="nombreOP" class="form-control" value="{{proceso.nombreOP}}"
                                 readonly>
                         </div>
 
                         <div class="form-group py-2 my-2"> {{!-- nombreProceso --}}
                             <label for="nombreProceso">Nombre Proceso</label>
                             <input type="text" name="nombreProceso" class="form-control"
-                                value="{{produccion.nombreProceso}}" readonly>
+                                value="{{proceso.nombreProceso}}" readonly>
                         </div>
+
                         <div class="form-group py-2 my-2"> {{!-- cantidad --}}
                             <label for="cantidad">Cantidad</label>
                             <input type="text" name="cantidad" class="form-control" value="{{produccion.cantidadIN}}">
                         </div>
-                        {{!-- idOP, idProceso e idProduccion ocultos --}}
-                        <input type="hidden" name="idOP" value="{{produccion.idOP}}">
-                        <input type="hidden" name="idProceso" value="{{produccion.idProceso}}">
+
+                        {{!-- Ocultos --}}
+                        <input type="hidden" name="idOP" value="{{proceso.idOP}}">
+                        <input type="hidden" name="idProceso" value="{{proceso.idProceso}}">
                         <input type="hidden" name="idProduccion" value="{{produccion.idProduccion}}">
-                        <input type="hidden" name="tipoProceso" value="{{produccion.tipoProceso}}">
-                        <input type="hidden" name="ordenRuta" value="{{produccion.ordenRuta}}">
+                        <input type="hidden" name="tipoProceso" value="{{proceso.tipoProceso}}">
+                        <input type="hidden" name="ordenRuta" value="{{proceso.ordenRuta}}">
+                        <input type="hidden" name="cantidadEnCola" value="{{proceso.cantidadEnCola}}">
+                        <input type="hidden" name="cantidadIN_Proceso" value="{{proceso.cantidadIN}}">
+                        <input type="hidden" name="cantidadIN_Produccion" value="{{produccion.cantidadIN}}">
                         
 
                         <div class="form-group py-2 my-2 d-flex justify-content-center"> {{!-- boton confirmar --}}

@@ -38,11 +38,11 @@ router.post('/editarProceso/:idProceso', async (req, res) => {
         // SI tipoproceso = 1 y nombreProceso= "preProduccion" y estadoProceso = "Terminado"
         if (resultadoOP[0].tipoProceso == 1 && resultadoOP[0].nombreProceso == "preProduccion" && resultadoOP[0].estadoProceso == "Terminado") {
             //actualizar estado de telares a "en cola"
-            await pool.query('UPDATE procesos SET estadoProceso = "en Cola" WHERE idOP = ? AND nombreProceso LIKE ?', [resultadoOP[0].idOP, '%telar%']);
+            await pool.query('UPDATE procesos SET estadoProceso = "en Cola", cantidadEnCola = ? WHERE idOP = ? AND nombreProceso LIKE ?', [proceso.cantidadOUT, resultadoOP[0].idOP, '%telar%']);
         } else {
             if (resultadoOP[0].tipoProceso == 1 && resultadoOP[0].nombreProceso == "preProduccion" && resultadoOP[0].estadoProceso != "Terminado") {
                 //actualizar estado de telares a "pendiente" 
-                await pool.query('UPDATE procesos SET estadoProceso = "Pendiente" WHERE idOP = ? AND nombreProceso LIKE ?', [resultadoOP[0].idOP, '%telar%']);
+                await pool.query('UPDATE procesos SET estadoProceso = "Pendiente", cantidadEnCola = "0" WHERE idOP = ? AND nombreProceso LIKE ?', [resultadoOP[0].idOP, '%telar%']);
             }
         };
 
