@@ -18,8 +18,8 @@
                     <form action="/produccion/confirmarFinalizacion" method="post">
                         <div class="form-group py-2 my-2"> {{!-- consecutivoOP --}}
                             <label for="consecutivoOP">Orden de Producción</label>
-                            <input type="text" name="consecutivoOP" class="form-control"
-                                value="{{proceso.consecutivo}}" readonly>
+                            <input type="text" name="consecutivoOP" class="form-control" value="{{proceso.consecutivo}}"
+                                readonly>
                         </div>
 
                         <div class="form-group py-2 my-2"> {{!-- nombreOP --}}
@@ -47,8 +47,6 @@
                         <input type="hidden" name="ordenRuta" value="{{proceso.ordenRuta}}">
                         <input type="hidden" name="cantidadEnCola" value="{{proceso.cantidadEnCola}}">
                         <input type="hidden" name="cantidadIN_Proceso" value="{{proceso.cantidadIN}}">
-                        <input type="hidden" name="cantidadIN_Produccion" value="{{produccion.cantidadIN}}">
-                        
 
                         <div class="form-group py-2 my-2 d-flex justify-content-center"> {{!-- boton confirmar --}}
                             <button type="submit" class="btn btn-success">Confirmar</button>

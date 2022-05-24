@@ -137,11 +137,18 @@ router.get('/iniciarProduccion/:idProceso', sesionOperador, sesionOP, async (req
     const idProceso = req.params.idProceso;
     const operador = req.session.operador;
     const ordenProduccion = req.session.ordenProduccion;
+    const validaciones = {
+        corte: false
+    }
     //buscar idProceso en procesos
     const resultadoProceso = await pool.query('SELECT * FROM procesos WHERE idProceso = ?', [idProceso]);
     if (resultadoProceso.length > 0) {
         const proceso = resultadoProceso[0];
-        res.render('produccion/iniciarProduccion', { operador, ordenProduccion, proceso });
+        if (proceso.nombreProceso == 'corte'){
+            validaciones.corte = true;
+        }
+
+        res.render('produccion/iniciarProduccion', { operador, ordenProduccion, proceso, validaciones });
     } else {
         req.flash('message', 'ERROR FATAL: No se encontro el proceso, porfavor intente nuevamente');
         res.redirect('/produccion/inicio');
@@ -154,7 +161,7 @@ router.post('/iniciarProduccion/:idProceso', sesionOperador, sesionOP, async (re
     const idProceso = req.params.idProceso;
     const operador = req.session.operador;
     const ordenProduccion = req.session.ordenProduccion;
-    const medida = helpers.unidadesMedida(ordenProduccion.tipoProceso, req.body.nombreProceso)
+    const medida = helpers.unidadesMedida(ordenProduccion.tipoProceso, req.body.nombreProceso);
     const datosProduccion = {
         inicio: moment().format('YYYY-MM-DD HH:mm:ss'),
         medidaIN: medida.in,
@@ -163,6 +170,10 @@ router.post('/iniciarProduccion/:idProceso', sesionOperador, sesionOP, async (re
         idProceso: idProceso,
         idOperador: operador.idOperador
     };
+    if (req.body.nombreProceso == 'corte'){
+        datosProduccion.observaciones = req.body.maquinaCorte;
+    }
+
     //insertamos en produccion el nuevo registro
     const produccionInsertada = await pool.query('INSERT INTO produccion SET ?', [datosProduccion]);
 
@@ -203,10 +214,10 @@ router.get('/confirmarFinalizacion/:idProduccion', sesionOperador, async (req, r
 
 // POST confirmarFinalizacion
 router.post('/confirmarFinalizacion', async (req, res) => {
-    const {idProduccion, idProceso, idOP, ordenRuta, cantidadEnCola, cantidadIN_Proceso, cantidadIN_Produccion, cantidadOUT} = req.body;
+    const {idProduccion, idProceso, idOP, ordenRuta, cantidadEnCola, cantidadIN_Proceso} = req.body;
     const operador = req.session.operador;
     const medida = helpers.unidadesMedida(req.body.tipoProceso, req.body.nombreProceso)
-    datosProduccion = {
+    const datosProduccion = {
         fin: moment().format('YYYY-MM-DD HH:mm:ss'),
         medidaOUT: medida.out,
         cantidadOUT: req.body.cantidad
@@ -234,8 +245,8 @@ router.post('/confirmarFinalizacion', async (req, res) => {
             const datosProceso2 = {
                 cantidadEnCola: parseInt(siguienteProceso[0].cantidadEnCola) + parseInt(req.body.cantidad)
             };
-            // si estadoProceso es 'Pendiente' entonces cambio a 'en Cola'
-            if (siguienteProceso[0].estadoProceso === 'Pendiente') {
+            // si estadoProceso es 'Pendiente' o 'Terminado' entonces cambio a 'en Cola'
+            if (siguienteProceso[0].estadoProceso === 'Pendiente' || siguienteProceso[0].estadoProceso === 'Terminado') {
                 datosProceso2.estadoProceso = 'en Cola';
             }
             // actualizar el siguiente proceso
@@ -246,7 +257,7 @@ router.post('/confirmarFinalizacion', async (req, res) => {
     }else{ // != telar
 
         // definimos el estado del proceso
-        const estadoProceso = parseInt(cantidadEnCola) <= parseInt(cantidadIN_Proceso) ? 'Finalizado' : 'en Cola'; 
+        const estadoProceso = parseInt(cantidadEnCola) <= parseInt(cantidadIN_Proceso) ? 'Terminado' : 'en Cola'; 
 
         // Actualizamos el proceso 
         consultaUpdteProceso = 'UPDATE procesos' +
@@ -257,14 +268,23 @@ router.post('/confirmarFinalizacion', async (req, res) => {
 
         // consultamos el idProceso del siguiente proceso
         const ordenRuta2 = parseInt(ordenRuta) + 1;
-
-        // Actualizamos el diguiente proceso
-        const UpdateSiguinteProceso = 'UPDATE procesos' +
-        ' SET procesos.cantidadEnCola = procesos.cantidadEnCola + ' + parseInt(req.body.cantidad) +
-        ', procesos.estadoProceso = "en Cola"' +
-        ' WHERE idOP = ' + idOP +
-        ' AND ordenRuta = ' + ordenRuta2;
-        await pool.query(UpdateSiguinteProceso);
+        const consultaSiguinteProceso = 'SELECT * FROM procesos' +
+            ' WHERE idOP = ' + idOP +
+            ' AND ordenRuta = ' + ordenRuta2;   
+        const siguienteProceso = await pool.query(consultaSiguinteProceso);
+        if(siguienteProceso.length > 0){// si existe siguiente proceso
+            const datosProceso2 = {
+                cantidadEnCola: parseInt(siguienteProceso[0].cantidadEnCola) + parseInt(req.body.cantidad)
+            };
+            // si estadoProceso es 'Pendiente' o 'Terminado' entonces cambio a 'en Cola'
+            if (siguienteProceso[0].estadoProceso === 'Pendiente' || siguienteProceso[0].estadoProceso === 'Terminado') {
+                datosProceso2.estadoProceso = 'en Cola';
+            }
+            // actualizar el siguiente proceso
+            await pool.query('UPDATE procesos SET ? WHERE idProceso = ?', [datosProceso2, siguienteProceso[0].idProceso]);
+        }else{
+            console.log('No hay siguiente proceso, idProduccion: ' + idProduccion + ' idOP: ' + idOP);
+        }
 
     }
 
@@ -276,43 +296,3 @@ router.post('/confirmarFinalizacion', async (req, res) => {
 
 module.exports = router;
 
-/* PROCESOS QUE YA NO SE UTILIZAN
-//POST confirmarProduccion
-router.post('/confirmarProduccion', async (req, res) => {
-    const operador = req.session.operador;
-    // validar que si hay operador
-    if (operador.idOperador) {
-        //actualizamos idOperador e inicio en produccion con idProduccion
-        const body = req.body;
-        const resultadoProduccion = await pool.query('UPDATE produccion SET idOperador = ?, inicio = NOW() WHERE idProduccion = ?', [operador.idOperador, body.idProduccion]);
-
-        // actualizamos estadoProceso="en Proceso" en procesos 
-        const resultadoProceso = await pool.query('UPDATE procesos SET estadoProceso = "en Proceso" WHERE idProceso = ?', [body.idProceso]);
-
-        // actualizamos estadoOP="en Proceso" en ordenProduccion
-        const resultadoOP = await pool.query('UPDATE ordenProduccion SET estadoOP = "en Proceso" WHERE idOP = ?', [body.idOP]);
-
-        await actualizarEstadoProcesos(body.idOP, body.cantidadOP);
-
-        req.flash('success', 'Producción iniciada');
-
-    } else {
-        req.flash('message', 'Operador no encontrado');
-    }
-    res.redirect('/produccion/inicio');
-
-});
-
-//GET preProduccion
-router.get('/preProduccion', async (req, res) => {
-    res.render('produccion/preProduccion');
-});
-
-//POST preProduccion
-router.post('/preProduccion', async (req, res) => {
-    const operador = req.session.operador;
-    const body = req.body;
-    res.send(body);
-});
-
- */
