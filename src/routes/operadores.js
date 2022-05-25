@@ -60,8 +60,29 @@ router.get('/operadoresActivos', async(req, res) => {
     res.render('operadores/operadoresActivos', {operadoresActivos});
 });
 
+//GET informeProduccion
+router.get('/informeProduccion', async(req, res) => {
+    // SELECCIONAR OPERARIOS
+    const operadores = await pool.query('SELECT * FROM operadores WHERE estadoOperador =' + "'" + 'Activo' + "'");
+    res.render('operadores/seleccionar', {operadores});
 
+});
 
+//GET: informeProduccion/:idOperador
+router.get('/informeProduccion/:idOperador', async(req, res) => {
+    const { idOperador } = req.params;
+    // CONSULTAMOS EL OPERADOR
+    const operador = await pool.query('SELECT * FROM operadores WHERE idOperador = ?', [idOperador]);
+
+    // CONSULTAMOS LOS REGISTROS DEL OPERADOR EN LA TABLA PRODUCCION
+    const consultaProduccion = 'SELECT * FROM produccion' + 
+    ' INNER JOIN ordenproduccion ON produccion.idOP = ordenproduccion.idOP' +
+    ' INNER JOIN procesos ON produccion.idProceso = procesos.idProceso' +
+    ' WHERE idOperador = ' + idOperador + 
+    ' ORDER BY inicio DESC';
+    const produccion = await pool.query(consultaProduccion);
+    res.render('operadores/informeProduccion', { operador: operador[0], produccion });
+});
 
 
 module.exports = router;

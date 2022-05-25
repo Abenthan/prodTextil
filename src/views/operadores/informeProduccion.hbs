@@ -1,0 +1,77 @@
+<div class="container">
+    <div class="row d-flex align-content-between flex-wrap my-1 py-1">{{!-- Menu rutas --}}
+        <div class="col">
+            <div class="d-flex"> {{!-- rutas --}}
+                <a href="/home">Home</a>
+                <p> &nbsp; / &nbsp;</p>
+                <a href="/home/operarios">Operarios</a>
+                <p> &nbsp; / &nbsp;</p>
+                <a href="/operadores/informeProduccion">Seleccionar Operario</a>
+
+            </div>
+        </div>
+
+        <div class="col d-flex justify-content-end p-1"> {{!-- Botones --}}
+            <a href="/home" class="btn btn-primary m-1">Salir&nbsp;<i class="fa-solid fa-right-from-bracket"></i></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="d-flex ">
+                <p class="h5">Produccion de:</p>
+                <p>&nbsp;</p>
+                <p class="h4">{{operador.nombreOperador}}</p>
+            </div>
+            <div class="my-2">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Orden de produccion</th>
+                            <th>Consecutivo</th>
+                            <th>Proceso</th>
+                            <th>Cantidad</th>
+                            <th>Fecha</th>
+                            <th>Hora Inicio</th>
+                            <th>Hora Fin</th>
+                            <th>Tiempo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each produccion}}
+                        <tr>
+                            <td>{{nombreOP}}</td>
+                            <td>{{consecutivo}}</td>
+                            <td>{{nombreProceso}}</td>
+                            <td>{{cantidadOUT}}</td>
+                            <script>
+                                //obtengo datetime 
+                                var inicio = new Date("{{inicio}}");
+                                var fin = new Date("{{fin}}");
+
+                                //obtengo horas y minutos
+                                var horaInicio = inicio.getHours() + ":" + inicio.getMinutes();
+                                var horaFin = fin.getHours() + ":" + fin.getMinutes();
+
+                                // covierto inicio a fecha en formato dd/mm
+                                var fecha = inicio.getDate() + "/" + (inicio.getMonth() + 1);
+
+                                // obtengo total del tiempo en minutos
+                                var tiempo = (fin - inicio) / 60000;
+
+                                // inserto los td
+                                document.write("<td>" + fecha + "</td>");
+                                document.write("<td>" + horaInicio + "</td>");
+                                document.write("<td>" + horaFin + "</td>");
+                                document.write("<td>" + parseInt(tiempo) + "</td>");
+                            </script>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+
+
+        </div>
+    </div>
+</div>
