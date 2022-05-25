@@ -32,11 +32,19 @@
                         {{#each procesos}}
                         <script>
                             if ("{{estadoProceso}}" == "en Cola") {
-                                // insertar fila en la tabla
-                                var fila = document.createElement("tr");
-                                fila.innerHTML = '<td>{{nombreProceso}}</td>';
-                                fila.innerHTML += '<td><a href="/produccion/iniciarProduccion/{{idProceso}}" class="btn btn-outline-info">Iniciar</a></td>';
-                                document.getElementById("tbody_procesos").appendChild(fila);
+                                if ("{{nombreProceso}}" == "despacho") {
+                                    var fila = document.createElement("tr");
+                                    fila.innerHTML = '<td>{{nombreProceso}}</td>';
+                                    fila.innerHTML += '<td><a href="/produccion/despacho/{{idProceso}}" class="btn btn-outline-info">Despachar</a></td>';
+                                    document.getElementById("tbody_procesos").appendChild(fila);
+
+                                } else {
+                                    // insertar fila en la tabla
+                                    var fila = document.createElement("tr");
+                                    fila.innerHTML = '<td>{{nombreProceso}}</td>';
+                                    fila.innerHTML += '<td><a href="/produccion/iniciarProduccion/{{idProceso}}" class="btn btn-outline-info">Iniciar</a></td>';
+                                    document.getElementById("tbody_procesos").appendChild(fila);
+                                }
                             }
                         </script>
 

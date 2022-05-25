@@ -4,53 +4,7 @@ const pool = require('../database');
 const moment = require('moment');
 const helpers = require('../lib/helpers');
 const { sesionOperador, sesionOP } = require('../lib/sesiones');
-
-async function actualizarEstadoProcesos(idOP, cantidadOP) {
-    console.log('ingreso a actualizarEstadoProcesos: idOP->', idOP, ' cantidadOP -> ', cantidadOP);
-    const resultadoProcesos = await pool.query('SELECT * FROM procesos WHERE idOP = ?', [idOP]);
-    for (let i = 0; i < resultadoProcesos.length; i++) {
-        const proceso = resultadoProcesos[i];
-        var cantidadAcumulada = 0;
-        // busco en produccion el proceso
-        const resultadoProduccion = await pool.query('SELECT * FROM produccion WHERE idproceso = ?', [proceso.idProceso]);
-        for (let j = 0; j < resultadoProduccion.length; j++) {
-            const produccion = resultadoProduccion[j];
-
-            if (produccion.inicio != null && produccion.fin != null) {
-                // el proceso ha finalizado
-                cantidadAcumulada = cantidadAcumulada + produccion.cantidad;
-
-                if (cantidadAcumulada == cantidadOP) {
-                    //proceso Terminado totalmente, actualizamos el estado en procesos a Terminado y cantidad = 0
-                    await pool.query('UPDATE procesos SET estadoProceso = ?, cantidadProceso = ? WHERE idProceso = ?', ['Terminado', 0, proceso.idProceso]);
-
-                    // i es el ultimo
-                    if (i == resultadoProcesos.length - 1) {
-                        // actualizamos el estado de la orden de produccion a Terminada
-                        await pool.query('UPDATE ordenproduccion SET estadoOP = ? WHERE idOP = ?', ['Terminado', idOP]);
-                    }
-
-                }
-            } else {
-                if (produccion.inicio == null && produccion.fin == null) {
-                    // el proceso esta en Cola
-                    cantidadAcumulada = cantidadAcumulada + produccion.cantidad;
-
-                    if (cantidadAcumulada == cantidadOP) {
-                        await pool.query('UPDATE procesos SET estadoProceso = ?, cantidadProceso = ? WHERE idProceso = ?', ['en Cola', cantidadAcumulada, proceso.idProceso]);
-                    }
-                } else {
-                    if (produccion.inicio != null && produccion.fin == null) {
-                        // el proceso esta en Proceso
-                        cantidadAcumulada = cantidadAcumulada + produccion.cantidad;
-                        await pool.query('UPDATE procesos SET estadoProceso = ?, cantidadProceso = ? WHERE idProceso = ?', ['en Proceso', cantidadAcumulada, proceso.idProceso]);
-
-                    }
-                }
-            }
-        }
-    }
-}
+const req = require('express/lib/request');
 
 //GET Inicio
 router.get('/inicio', (req, res) => {
@@ -292,6 +246,52 @@ router.post('/confirmarFinalizacion', async (req, res) => {
     res.redirect('/produccion/inicio');
 
 });
+
+// GET despacho
+router.get('/despacho/:idProceso', sesionOperador, sesionOP, async (req, res) => {
+    const operador = req.session.operador;
+    const idProceso = req.params.idProceso;
+    const resultadoProceso = await pool.query('SELECT * FROM procesos INNER JOIN ordenproduccion ON procesos.idOP = ordenproduccion.idOP WHERE idProceso = ?', [idProceso]);
+    const proceso = resultadoProceso[0];
+    res.render('produccion/despacho', { operador, proceso });
+});
+
+// POST despacho
+router.post('/despacho', sesionOperador, sesionOP, async (req, res) => {
+    // consulto el proceso:
+    const resultadoProceso = await pool.query('SELECT * FROM procesos INNER JOIN ordenproduccion ON procesos.idOP = ordenproduccion.idOP WHERE idProceso = ?', [req.body.idProceso]);
+    const proceso = resultadoProceso[0];
+
+    // Insertar registro en produccion
+    const medida = helpers.unidadesMedida(proceso.tipoProceso, proceso.nombreProceso)
+
+    const datosProduccion = {
+        inicio: moment().format('YYYY-MM-DD HH:mm:ss'),
+        fin: moment().format('YYYY-MM-DD HH:mm:ss'),
+        medidaIN: medida.in,
+        cantidadIN: proceso.cantidadEnCola,
+        medidaOUT: medida.out,
+        cantidadOUT: req.body.cantidad,
+        idOP: proceso.idOP,
+        idProceso: proceso.idProceso,
+        idOperador: req.session.operador.idOperador
+    };
+    await pool.query('INSERT INTO produccion SET ?', [datosProduccion]);
+
+    const datosProceso = {
+        cantidadIN: proceso.cantidadEnCola,
+        cantidadOUT: req.body.cantidad,
+        estadoProceso: 'Terminado',
+        observacionesProceso: req.body.observaciones 
+    };
+    await pool.query('UPDATE procesos SET ? WHERE idProceso = ?', [datosProceso, req.body.idProceso]);
+
+    await pool.query('UPDATE ordenproduccion SET ? WHERE idOP = ?', [{ estadoOP: 'Terminado' }, proceso.idOP]);
+
+    res.send('Datos Produccion: ' + datosProduccion[0] + '<br> Datos Proceso: ' + datosProceso[0]); 
+
+});
+
 
 
 module.exports = router;

@@ -1,0 +1,68 @@
+<div class="container">
+    <div class="row d-flex align-content-between flex-wrap my-1">{{!-- Menu rutas --}}
+
+        <div class="col d-flex justify-content-end"> {{!-- Botones --}}
+            <a href="/produccion/inicio" class="btn btn-danger">Salir&nbsp;<i
+                    class="fa-solid fa-right-from-bracket"></i></a>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card">
+                <div class="card-header"> {{!-- nombreOperador --}}
+                    <h5 class="card-title text-center">{{operador.nombreOperador}}</h5>
+                </div>
+                <div class="card-body">
+                    <form action="/produccion/despacho" method="post">
+                        <div class="form-group py-2 my-2"> {{!-- consecutivoOP --}}
+                            <label for="consecutivoOP">Orden de Producción</label>
+                            <input type="text" name="consecutivoOP" class="form-control" value="{{proceso.consecutivo}}"
+                                readonly>
+                        </div>
+
+                        <div class="form-group py-2 my-2"> {{!-- nombreOP --}}
+                            <label for="nombreOP">Nombre Orden de Producción</label>
+                            <input type="text" name="nombreOP" class="form-control" value="{{proceso.nombreOP}}"
+                                readonly>
+                        </div>
+
+                        <div class="form-group py-2 my-2"> {{!-- cantidad --}}
+                            <label for="cantidad">Cantidad</label>
+                            <input type="text" name="cantidad" class="form-control">
+                        </div>
+
+                        <div class="form-group py-2 my-2"> {{!-- observaciones --}}
+                            <label for="observaciones">Observaciones</label>
+                            <textarea class="form-control" name="observaciones" id="observaciones"></textarea>
+                        </div>
+
+                        {{!-- input ocultos --}}
+                        <input type="hidden" name="idProceso" value="{{proceso.idProceso}}">
+
+
+                        <div class="form-group py-2 my-2 d-flex justify-content-center"> {{!-- boton confirmar --}}
+                            <button type="submit" class="btn btn-success">Despachar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<script>
+    const tx = document.getElementsByTagName("textarea");
+    for (let i = 0; i < tx.length; i++) {
+        tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+        tx[i].addEventListener("input", OnInput, false);
+    }
+
+    function OnInput() {
+        this.style.height = "auto";
+        this.style.height = (this.scrollHeight) + "px";
+    }
+</script>
