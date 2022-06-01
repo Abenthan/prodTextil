@@ -44,6 +44,17 @@ tipoProceso.addEventListener('change', function () {
             procesos.innerHTML += '<li><input class="form-check-input" type="checkbox" onclick="checkbox(this)" id="corte" name="corte" checked><label id="corteLabel" for="corte"> Corte y empaque</label></li>';
             procesos.innerHTML += '<li><input class="form-check-input" type="checkbox" onclick="checkbox(this)" id="inspeccion" name="inspeccion" checked><label id="inspeccionLabel" for="inspeccion"> Inspeccion Final</label></li>';
             procesos.innerHTML += '<li><input class="form-check-input" type="checkbox" onclick="checkbox(this)" id="despacho" name="despacho" checked><label id="despachoLabel" for="despacho"> Despacho</label></li>';
+            
+            // insertar input en el formulario para campo ancho
+            var inputAncho = document.createElement('input');
+            inputAncho.setAttribute('type', 'number');
+            inputAncho.setAttribute('name', 'ancho');
+            inputAncho.setAttribute('id', 'ancho');
+            inputAncho.setAttribute('class', 'form-control');
+            inputAncho.setAttribute('placeholder', 'Ancho');
+            document.getElementById('ancho').parentNode.insertBefore(inputAncho, document.getElementById('ancho').nextSibling);
+
+
             break;
 
         

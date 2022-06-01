@@ -1,0 +1,61 @@
+<div class="container">
+    <div class="row d-flex">
+        <!-- Menu rutas -->
+        <div class="col">
+            <div class="d-flex"> {{!-- rutas --}}
+                <a href="/home">Inicio</a>
+                <p> &nbsp; / &nbsp;</p>
+                <a href="/home/produccion">Menu Produccion</a>
+            </div>
+        </div>
+
+        <div class="col d-flex justify-content-end p-1"> {{!-- Botones --}}
+            <a href="/home/produccion" class="btn btn-secondary m-1">Salir&nbsp;<i
+                    class="fa-solid fa-arrow-right-from-bracket"></i></a>
+
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-4 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Tipo de Proceso</h4>
+                </div>
+                <form action="/ordenProduccion/tipoProceso" method="post">
+                    <div class="card-body">
+                        <div class="form-check"> {{!-- Tejido --}}
+                            <input class="form-check-input" type="radio" name="tipoProceso" id="tejido" value="1">
+                            <label class="form-check-label" for="tejido">
+                                Tejido
+                            </label>
+                        </div>
+
+                        <div class="form-check">{{!-- Flexo --}}
+                            <input class="form-check-input" type="radio" name="tipoProceso" id="flexo" value="2">
+                            <label class="form-check-label" for="flexo">
+                                Flexo
+                            </label>
+                        </div>
+
+                        <div class="form-check">{{!-- Transfer --}}
+                            <input class="form-check-input" type="radio" name="tipoProceso" id="transfer" value="3">
+                            <label class="form-check-label" for="transfer">
+                                Transfer
+                            </label>
+                        </div>
+
+                        <div class="form-check">{{!-- Garras --}}
+                            <input class="form-check-input" type="radio" name="tipoProceso" id="garras" value="4">
+                            <label class="form-check-label" for="garras">
+                                Garras
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card-footer text-center form-group">
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>

@@ -4,6 +4,29 @@ const pool = require('../database');
 const helpers = require('../lib/helpers');
 const moment = require('moment');
 
+// GET: tipoProceso
+router.get('/tipoProceso', async (req, res) => {
+    res.render('ordenProduccion/tipoProceso');    
+
+});
+
+// POST: tipoProceso
+router.post('/tipoProceso', async (req, res) => {
+    const { tipoProceso } = req.body;
+    if(tipoProceso == '1'){
+        res.redirect('/ordenProduccion/tejido');
+    }else{
+        res.redirect('/ordenProduccion/crear');
+    }
+    
+});
+
+//GET: tejido
+router.get('/tejido', async (req, res) => {
+    const fecha = moment().format('YYYY-MM-DD');
+    res.render('ordenProduccion/tejido', {fecha});
+});
+
 //GET: crear
 router.get('/crear', (req, res) => {
     const fecha = moment().format('YYYY-MM-DD');
@@ -20,12 +43,17 @@ router.post('/crear', async (req, res) => {
         tipoProceso: req.body.tipoProceso,
         estadoOP: 'Pendiente',
     };
+    if(datosOP.tipoProceso == '1'){
+        datosOP.reportes = req.body.reportes;
+        datosOP.largo = req.body.largo;
+    }
 
     // buscamos si existe el consucutivo
     const op = await pool.query('SELECT * FROM ordenProduccion WHERE consecutivo = ?', [datosOP.consecutivo]);
+
     if (op.length > 0) { //ya existe el consecutivo
         req.flash('message', 'El consecutivo ya existe');
-        res.redirect('/ordenProduccion/crear');
+        res.redirect('/ordenProduccion/tipoProceso');
     } else { //no existe consecutivo
         if (datosOP.tipoProceso != '') {
             const tejido = ['diseño', 'ordenProduccion', 'preProduccion', 'telar1', 'telar2', 'telar4', 'telar5', 'telar6',
@@ -126,9 +154,9 @@ router.post('/crear', async (req, res) => {
 
             req.flash('success', 'Orden de Producción creada correctamente');
             res.redirect('/ordenProduccion/listarOP');
-        } else {
+        } else { /* sin proceso seleccionado */
             req.flash('message', 'Debe seleccionar un tipo de proceso');
-            res.redirect('/ordenProduccion/crear');
+            res.redirect('/ordenProduccion/tipoProceso');
         }
     }
 });
@@ -138,6 +166,5 @@ router.get('/listarOP', async (req, res) => {
     const ordenesProduccion = await pool.query('SELECT * FROM ordenProduccion WHERE estadoOP != ?', ['Terminado']);
     res.render('ordenProduccion/listarOP', { ordenesProduccion });
 });
-
 
 module.exports = router;
