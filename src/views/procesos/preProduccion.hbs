@@ -1,0 +1,86 @@
+<div class="container">
+    <div class="row d-flex align-content-between flex-wrap my-1">{{!-- Menu rutas --}}
+        <div class="col">
+            <div class="d-flex"> {{!-- rutas --}}
+                <a href="/home">Menu principal</a>
+                <p> &nbsp; / &nbsp;</p>
+                <a href="/home/Produccion">produccion</a>
+                <p> &nbsp; / &nbsp;</p>
+                <a href="/ordenProduccion/listarOP">Ordenes de produccion</a>
+                <p> &nbsp; / &nbsp;</p>
+                <a href="/procesos/procesosOP/{{proceso.idOP}}">Procesos</a>
+            </div>
+        </div>
+
+        <div class="col d-flex justify-content-end"> {{!-- Botones --}}
+            <a href="/home" class="btn btn-secondary">Salir&nbsp;<i class="fa-solid fa-right-from-bracket"></i></a>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4 class="card-title">preProduccion</h4>
+                </div>
+                <form action="/procesos/preProduccion/{{proceso.idProceso}}" method="post">
+                    <div class="card-body">
+
+                        <div class="form-group mb-2">{{!-- consecutivo OP --}}
+                            <label for="consecutivoOP">Consecutivo</label>
+                            <input type="text" class="form-control" id="consecutivoOP" name="consecutivoOP"
+                                value="{{proceso.consecutivo}}" readonly>
+                        </div>
+
+                        <div class="form-group mb-2">{{!-- nombreOP --}}
+                            <label for="nombreOP">Nombre de la Orden de Produccion</label>
+                            <input type="text" class="form-control" id="nombreOP" name="nombreOP"
+                                value="{{proceso.nombreOP}}" readonly>
+                        </div>
+
+                        <div class="form-group mb-2"> {{!-- estado --}}
+                            <label for="estado">Estado del proceso</label>
+                            <select name="estado" class="form-control" id="estado">
+                                <option value="en Proceso">en Proceso</option>
+                                <option value="Terminado">Terminado</option>
+                            </select>
+                            <script>
+                                document.getElementById('estado').value = "{{proceso.estadoProceso}}";
+                            </script>
+                        </div>
+
+                        <div class="form-group mb-2">{{!-- Observaciones --}}
+                            <label for="observaciones">Observaciones</label>
+                            <textarea name="observaciones" class="form-control"
+                                id="observaciones">{{proceso.observacionesProceso}}</textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="form-group text-center"> {{!-- Boton --}}
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    const tx = document.getElementsByTagName("textarea");
+    for (let i = 0; i < tx.length; i++) {
+        tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+        tx[i].addEventListener("input", OnInput, false);
+    }
+
+    function OnInput() {
+        this.style.height = "auto";
+        this.style.height = (this.scrollHeight) + "px";
+    }
+
+</script>
