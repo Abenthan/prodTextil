@@ -2,7 +2,7 @@
     <div class="row d-flex align-content-between flex-wrap my-1">{{!-- Menu rutas --}}
 
         <div class="col d-flex justify-content-end"> {{!-- Botones --}}
-            <a href="/produccion/inicio" class="btn btn-danger">Salir&nbsp;<i
+            <a href="/produccion/inicio" class="btn btn-secondary">Salir&nbsp;<i
                     class="fa-solid fa-right-from-bracket"></i></a>
 
         </div>
@@ -26,41 +26,47 @@
                 <div class="card-body">
                     <form action="/produccion/iniciarProduccion/{{proceso.idProceso}}" method="post">
 
+                        {{#if validaciones.ingresarCantidad}}
                         <div class="form-group"> {{!-- cantidad --}}
                             <label for="cantidad">Cantidad</label>
                             <input type="number" name="cantidad" class="form-control" autofocus>
                         </div>
+                        {{/if}}
 
                         {{#if validaciones.corte }}
                         <div class="mt-2"> {{!-- maquinas de corte --}}
 
                             <div class="form-check">{{!-- Maquina 1 --}}
-                                <input class="form-check-input" type="radio" name="maquinaCorte" id="maquinaCorte1" value="Maquina1">
+                                <input class="form-check-input" type="radio" name="maquinaCorte" id="maquinaCorte1"
+                                    value="Maquina1">
                                 <label class="form-check-label" for="maquinaCorte1">Maquina <strong>1</strong></label>
                             </div>
 
                             <div class="form-check">{{!-- Maquina 2 --}}
-                                <input class="form-check-input" type="radio" name="maquinaCorte" id="maquinaCorte2" value="Maquina2">
+                                <input class="form-check-input" type="radio" name="maquinaCorte" id="maquinaCorte2"
+                                    value="Maquina2">
                                 <label class="form-check-label" for="maquinaCorte2">Maquina <strong>2</strong></label>
                             </div>
 
                             <div class="form-check">{{!-- Maquina 3 --}}
-                                <input class="form-check-input" type="radio" name="maquinaCorte" id="maquinaCorte3" value="Maquina3">
+                                <input class="form-check-input" type="radio" name="maquinaCorte" id="maquinaCorte3"
+                                    value="Maquina3">
                                 <label class="form-check-label" for="maquinaCorte3">Maquina <strong>3</strong></label>
                             </div>
 
                             <div class="form-check">{{!-- Maquina 4 --}}
-                                <input class="form-check-input" type="radio" name="maquinaCorte" id="maquinaCorte4" value="Maquina4">
+                                <input class="form-check-input" type="radio" name="maquinaCorte" id="maquinaCorte4"
+                                    value="Maquina4">
                                 <label class="form-check-label" for="maquinaCorte4">Maquina <strong>4</strong></label>
                             </div>
 
                             <div class="form-check">{{!-- Maquina 5 --}}
-                                <input class="form-check-input" type="radio" name="maquinaCorte" id="maquinaCorte5" value="Maquina5">
+                                <input class="form-check-input" type="radio" name="maquinaCorte" id="maquinaCorte5"
+                                    value="Maquina5">
                                 <label class="form-check-label" for="maquinaCorte5">Maquina <strong>5</strong></label>
-                            </div>                            
+                            </div>
 
                         </div>
-
                         {{/if}}
 
                         {{!-- idOP, idProceso e idProduccion ocultos --}}

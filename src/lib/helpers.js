@@ -28,23 +28,23 @@ helpers.unidadesMedida = (tipoProceso, nombreProceso) => {
                     unidadesDeMedida.out = 'matrices';
                     break;
                 case 'telar1':
-                    unidadesDeMedida.in = 'matrices';
+                    unidadesDeMedida.in = 'indefinido';
                     unidadesDeMedida.out = 'metros';
                     break;
                 case 'telar2':
-                    unidadesDeMedida.in = 'matrices';
+                    unidadesDeMedida.in = 'indefinido';
                     unidadesDeMedida.out = 'metros';
                     break;
                 case 'telar4':
-                    unidadesDeMedida.in = 'matrices';
+                    unidadesDeMedida.in = 'indefinido';
                     unidadesDeMedida.out = 'metros';
                     break;
                 case 'telar5':
-                    unidadesDeMedida.in = 'matrices';
+                    unidadesDeMedida.in = 'indefinido';
                     unidadesDeMedida.out = 'metros';
                     break;
                 case 'telar6':
-                    unidadesDeMedida.in = 'matrices';
+                    unidadesDeMedida.in = 'indefinido';
                     unidadesDeMedida.out = 'metros';
                     break;
                 case 'enrrollado':
