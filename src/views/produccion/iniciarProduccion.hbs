@@ -29,8 +29,13 @@
                         {{#if validaciones.ingresarCantidad}}
                         <div class="form-group"> {{!-- cantidad --}}
                             <label for="cantidad">Cantidad</label>
-                            <input type="number" name="cantidad" class="form-control" autofocus>
+                            <input type="number" name="cantidadIN" class="form-control" 
+                            value={{proceso.cantidadEnCola}} autofocus>
                         </div>
+                        {{else}}
+                            {{!-- hidden --}}
+                            <input type="hidden" name="cantidadIN" value={{proceso.cantidadEnCola}}>
+
                         {{/if}}
 
                         {{#if validaciones.corte }}

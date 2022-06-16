@@ -38,7 +38,8 @@ router.post('/crear', async (req, res) => {
     const datosOP = {
         nombreOP: req.body.nombreOP,
         consecutivo: req.body.consecutivo,
-        cantidadOP: req.body.cantidadOP,
+        cantidadPedida: req.body.cantidadPedida,
+        cantidadProgramada: req.body.cantidadProgramada,
         fecha: req.body.fecha,
         tipoProceso: req.body.tipoProceso,
         estadoOP: 'Pendiente',

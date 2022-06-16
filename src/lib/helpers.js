@@ -18,7 +18,6 @@ helpers.matchPassword = async (password, savedPassword) => { // el metodo matchP
 };
 
 helpers.unidadesMedida = (tipoProceso, nombreProceso) => {
-    console.log('Ingreso al helper con tipoProceso: ' + tipoProceso + ' y nombreProceso: ' + nombreProceso);
     unidadesDeMedida = { in: '', out: '' };
     switch (tipoProceso) {
         case '1':
