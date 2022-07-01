@@ -27,20 +27,27 @@
                     <form action="/produccion/iniciarProduccion/{{proceso.idProceso}}" method="post">
 
                         {{#if validaciones.ingresarCantidad}}
-                        <div class="form-group"> {{!-- cantidad --}}
-                            <label for="cantidad">Cantidad</label>
-                            <input type="number" name="cantidadIN" class="form-control" 
-                            value={{proceso.cantidadEnCola}} autofocus>
+                        <div class="form-group d-flex">
+                            <div class="m-2"> {{!-- cantidadIN --}}
+                                <label for="cantidadIN">Cantidad Inicial</label>
+                                <input type="number" name="cantidadIN" class="form-control"
+                                    value={{proceso.cantidadEnCola}} autofocus>
+                            </div>
+                            <div class="m-2"> {{!-- medidaIN --}}
+                                <label for="medidaIN">Unidad de medida:</label>
+                                <input type="text" name="medidaIN" class="form-control" value="{{proceso.medidaIN}}"
+                                    readonly>
+                            </div>
                         </div>
+
                         {{else}}
-                            {{!-- hidden --}}
-                            <input type="hidden" name="cantidadIN" value={{proceso.cantidadEnCola}}>
+                        {{!-- hidden --}}
+                        <input type="hidden" name="cantidadIN" value={{proceso.cantidadEnCola}}>
 
                         {{/if}}
 
                         {{#if validaciones.corte }}
-                        <div class="mt-2"> {{!-- maquinas de corte --}}
-
+                        <div class="form-group mt-2"> {{!-- maquinas de corte --}}
                             <div class="form-check">{{!-- Maquina 1 --}}
                                 <input class="form-check-input" type="radio" name="maquinaCorte" id="maquinaCorte1"
                                     value="Maquina1">

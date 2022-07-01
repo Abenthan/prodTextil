@@ -36,8 +36,31 @@
 
                         <div class="form-group py-2 my-2"> {{!-- cantidad --}}
                             <label for="cantidad">Cantidad</label>
-                            <input type="text" name="cantidad" class="form-control" value="{{produccion.cantidadIN}}">
+                            <input type="text" name="cantidad" class="form-control" id="cantidad"
+                                value="{{produccion.cantidadIN}}">
                         </div>
+
+                        <script> // convierte de metros a unidades
+
+                            console.log("{{proceso.tipoProceso}}" + " {{proceso.nombreProceso}}");
+                            if ("{{proceso.tipoProceso}}" == "1" && "{{proceso.nombreProceso}}" == "corte") {
+                                console.log("entro");
+                                var largo = Number({{ proceso.largo }});
+                            var metros = Number({{ proceso.cantidadIN }});
+                            var unidades = parseInt(metros * 1000 / largo);
+                            document.getElementById("cantidad").value = unidades;
+                            }
+
+                        </script>
+
+                        {{#if validaciones.observaciones}}
+                        <div class="form-group py-2 my-2"> {{!-- observaciones --}}
+                            <label for="observaciones">Observaciones</label>
+                            <textarea name="observaciones" class="form-control" rows="2"
+                                placeholder="Observaciones">{{produccion.observaciones}}</textarea>
+                        </div>
+                        {{/if}}
+
 
                         {{!-- Ocultos --}}
                         <input type="hidden" name="idOP" value="{{proceso.idOP}}">
@@ -55,7 +78,23 @@
                 </div>
             </div>
 
-
         </div>
     </div>
 </div>
+<script>
+    const tx = document.getElementsByTagName("textarea");
+    if (tx.length > 0) {
+
+        for (let i = 0; i < tx.length; i++) {
+            tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+            tx[i].addEventListener("input", OnInput, false);
+        }
+
+        function OnInput() {
+            this.style.height = "auto";
+            this.style.height = (this.scrollHeight) + "px";
+        }
+
+    }
+
+</script>
