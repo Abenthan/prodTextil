@@ -100,7 +100,9 @@ router.get('/iniciarProduccion/:idProceso', sesionOperador, sesionOP, async (req
         const proceso = resultadoProceso[0];
 
         //validaciones
-        if (proceso.nombreProceso.includes('telar') || proceso.nombreProceso.includes('enrrollado')) {
+        if (proceso.nombreProceso.includes('telar')
+            || proceso.nombreProceso.includes('enrrollado')
+            || proceso.nombreProceso.includes('inspeccion')) {
             validaciones.ingresarCantidad = false;
         }
         if (proceso.nombreProceso == 'corte') {
@@ -133,7 +135,7 @@ router.post('/iniciarProduccion/:idProceso', sesionOperador, sesionOP, async (re
     if (req.body.nombreProceso == 'corte') {
         datosProduccion.especificaciones = req.body.maquinaCorte;
     }
-    
+
 
     //insertamos en produccion el nuevo registro
     const produccionInsertada = await pool.query('INSERT INTO produccion SET ?', [datosProduccion]);
@@ -169,10 +171,12 @@ router.get('/confirmarFinalizacion/:idProduccion', sesionOperador, async (req, r
         observaciones: false,
     }
 
-    if ((proceso.tipoProceso == '1') && (proceso.nombreProceso == 'corte')) {
-        validaciones.observaciones = true;
+    if (proceso.tipoProceso == '1') {
+        if ((proceso.nombreProceso == 'corte')
+            || (proceso.nombreProceso == 'inspeccion')) {
+            validaciones.observaciones = true;
+        }
     }
-
     res.render('produccion/confirmarFinalizacion', { operador, produccion, proceso, validaciones });
 
 });
@@ -191,7 +195,7 @@ router.post('/confirmarFinalizacion', async (req, res) => {
     if (req.body.observaciones) {
         datosProduccion.observaciones = req.body.observaciones;
     }
-    
+
     // actualizar produccion
     await pool.query('UPDATE produccion SET ? WHERE idProduccion = ?', [datosProduccion, idProduccion]);
 
@@ -255,7 +259,8 @@ router.post('/confirmarFinalizacion', async (req, res) => {
 
                 // ACTUALIZACION PROCESO
                 consultaUpdateProceso = 'UPDATE procesos' +
-                    ' SET procesos.cantidadOUT = procesos.cantidadOUT + ' + parseInt(req.body.cantidad) +
+                    ' SET procesos.cantidadEnCola = procesos.cantidadEnCola - ' + parseInt(req.body.cantidad) +
+                    ', procesos.cantidadOUT = procesos.cantidadOUT + ' + parseInt(req.body.cantidad) +
                     ' WHERE procesos.idProceso = ' + idProceso;
                 pool.query(consultaUpdateProceso);
 
@@ -332,6 +337,7 @@ router.post('/despacho', sesionOperador, sesionOP, async (req, res) => {
         cantidadIN: proceso.cantidadEnCola,
         medidaOUT: medida.out,
         cantidadOUT: req.body.cantidad,
+        observaciones: req.body.observaciones,
         idOP: proceso.idOP,
         idProceso: proceso.idProceso,
         idOperador: req.session.operador.idOperador
@@ -339,19 +345,47 @@ router.post('/despacho', sesionOperador, sesionOP, async (req, res) => {
     await pool.query('INSERT INTO produccion SET ?', [datosProduccion]);
 
     const datosProceso = {
-        cantidadIN: proceso.cantidadEnCola,
-        cantidadOUT: req.body.cantidad,
-        estadoProceso: 'Terminado',
-        observacionesProceso: req.body.observaciones
+        cantidadEnCola: proceso.cantidadEnCola - req.body.cantidad,
+        cantidadIN: proceso.cantidadIN + req.body.cantidad,
+        cantidadOUT: proceso.cantidadOUT + req.body.cantidad
     };
+
+    // evaluo si se termino el proceso
+    if (datosProceso.cantidadOUT > proceso.cantidadPedida) {
+        datosProceso.estadoProceso = 'Terminado';
+    }
+    // actualizo el proceso
+
     await pool.query('UPDATE procesos SET ? WHERE idProceso = ?', [datosProceso, req.body.idProceso]);
 
     await pool.query('UPDATE ordenproduccion SET ? WHERE idOP = ?', [{ estadoOP: 'Terminado' }, proceso.idOP]);
 
-    res.send('Datos Produccion: ' + datosProduccion[0] + '<br> Datos Proceso: ' + datosProceso[0]);
+    req.flash('success', 'Despacho Registrado');
+
+    res.redirect('/produccion/inicio');
 
 });
 
+// GET produccion
+router.get('/:idProduccion', async (req, res) => {
+    const idProduccion = req.params.idProduccion;
+    consultaProduccion = 'SELECT * FROM produccion' +
+    ' INNER JOIN operadores ON produccion.idOperador = operadores.idOperador' +
+    ' INNER JOIN procesos ON produccion.idProceso = procesos.idProceso' +
+    ' INNER JOIN ordenproduccion ON produccion.idOP = ordenproduccion.idOP' +
+    ' WHERE idProduccion = ' + idProduccion;
+    const resultadoProduccion = await pool.query(consultaProduccion);
+    const produccion = resultadoProduccion[0];
+    produccion.inicio = moment(produccion.inicio).format('DD/MM/YYYY HH:mm:ss');
+    produccion.fin = moment(produccion.fin).format('DD/MM/YYYY HH:mm:ss');
+
+    const validaciones ={};
+    if (produccion.especificaciones){
+        validaciones.especificaciones = true;
+    }
+   
+    res.render('produccion/produccion', { produccion });
+});
 
 
 module.exports = router;

@@ -1,0 +1,64 @@
+<div class="container">
+    <div class="row">
+        <div class="col">
+            {{!-- miga de pan --}}
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/home">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="/home/produccion">Menú de Producción</a></li>
+                    <li class="breadcrumb-item"><a href="/ordenProduccion/listarOP">Ordenes de producción</a></li>
+                    <li class="breadcrumb-item"><a href="/procesos/procesosOP/{{proceso.idOP}}">Procesos</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Producción por proceso</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    {{!-- titulo --}}
+    <div class="row">
+        <div class="col">
+            <h3>{{proceso.nombreProceso}}</h3>
+            <p><strong>{{proceso.nombreOP}}</strong>, consecutivo: <strong>{{proceso.consecutivo}}</strong></p>
+        </div>
+    </div>
+    {{!-- tabla produccion --}}
+    <div class="row">
+        <div class="col">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Operario</th>
+                        <th>Inicio</th>
+                        <th>Cantidad Inicio</th>
+                        <th>Fin</th>
+                        <th>Cantidad Fin</th>
+                        <th>Observaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each producciones}}
+                    <tr onclick="produccion({{idProduccion}})">
+                        <td>{{codigoOperador}}</td>
+                        <td>{{inicio}}</td>
+                        <td>{{cantidadIN}} {{medidaIN}}</td>
+                        <td>{{fin}}</td>
+                        <td>{{cantidadOUT}} {{medidaOUT}}</td>
+                        <td id="tdObservaciones_{{idProduccion}}"></td>
+                    </tr>
+                    <script>
+                        //si hay observaciones poner ver
+                        if ({{observaciones}} != "") {
+                            document.getElementById("tdObservaciones_{{idProduccion}}").innerHTML = "<a href='#'>Ver</a>";
+                        }
+                    </script>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function produccion(idProduccion) {
+        window.location.href = "/produccion/" + idProduccion;
+    }
+</script>

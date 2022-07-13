@@ -1,0 +1,94 @@
+<div class="container">
+    <div class="row">
+        <div class="col d-flex justify-content-between flex-wrap my-1">
+            <div>{{!-- miga de pan --}}
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/home">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="/home/produccion">Menú de Producción</a></li>
+                        <li class="breadcrumb-item"><a href="/ordenProduccion/listarOP">Ordenes de producción</a></li>
+                        <li class="breadcrumb-item"><a href="/procesos/procesosOP/{{produccion.idOP}}">Procesos</a></li>
+                        <li class="breadcrumb-item"><a
+                                href="/procesos/produccionXProceso/{{produccion.idProceso}}">Producción por proceso</a>
+                        </li>
+
+                        <li class="breadcrumb-item active" aria-current="page">Producción</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div>{{!-- botones --}}
+                <a href="/home" class="btn btn-secondary">Salir&nbsp;<i
+                    class="fa-solid fa-right-from-bracket"></i></a>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4>{{produccion.nombreOP}}</h4>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="form-group mb-2">{{!-- nombreOperador --}}
+                            <label for="nombreOperador">Nombre del operador:</label>
+                            <input type="text" id="nombreOperador" class="form-control"
+                                value="{{produccion.nombreOperador}}" readonly>
+                        </div>
+
+                        <div class="form-group m-2">{{!-- nombreProceso --}}
+                            <label for="nombreProceso">Nombre del proceso:</label>
+                            <input type="text" id="nombreProceso" class="form-control"
+                                value="{{produccion.nombreProceso}}" readonly>
+                        </div>
+
+                        <div class="d-flex m-2">
+                            <div class="form-group ml-5">{{!-- inicio --}}
+                                <label for="inicio">Inicio:</label>
+                                <input type="text" id="inicio" class="form-control" value="{{produccion.inicio}}"
+                                    readonly>
+                            </div>
+                            <div class="form-group ml-10">{{!-- cantidadIN --}}
+                                <label for="cantidadIN">Cantidad de entrada:</label>
+                                <input type="text" id="cantidadIN" class="form-control"
+                                    value="{{produccion.cantidadIN}} {{produccion.medidaIN}}" readonly>
+
+                            </div>
+                        </div>
+
+                        <div class="d-flex m-2">
+                            <div class="form-group m-2">{{!-- fin --}}
+                                <label for="inicio">Fin:</label>
+                                <input type="text" id="fin" class="form-control" value="{{produccion.fin}}" readonly>
+                            </div>
+                            <div class="form-group m-2">{{!-- cantidadOUT --}}
+                                <label for="cantidadOUT">Cantidad de salida:</label>
+                                <input type="text" id="cantidadOUT" class="form-control"
+                                    value="{{produccion.cantidadOUT}} {{produccion.medidaOUT}}" readonly>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group m-2">{{!-- observaciones --}}
+                            <label for="observaciones">Observaciones:</label>
+                            <textarea class="form-control" id="observaciones" rows="1"
+                                readonly>{{produccion.observaciones}}</textarea>
+                        </div>
+                        {{#if produccion.especificaciones}}
+                        <div class="form-group m-2">{{!-- especificaciones --}}
+                            <label for="especificaciones">Especificaciones:</label>
+                            <textarea class="form-control" id="especificaciones" rows="1"
+                                readonly>{{produccion.especificaciones}}</textarea>
+                        </div>
+                        {{/if}}
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/js/textareaAutomatico.js"></script>

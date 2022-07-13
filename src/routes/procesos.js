@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../database');
+const moment = require('moment');
 
 //GET: procesos de una ordenProduccion
 router.get('/procesosOP/:idOP', async (req, res) => {
@@ -9,6 +10,19 @@ router.get('/procesosOP/:idOP', async (req, res) => {
     OP = resultadoOP[0];
     const procesos = await pool.query('SELECT * FROM procesos WHERE idOP = ?', [idOP]);
     res.render('procesos/procesosOP', { OP, procesos });
+});
+
+//GET: produccion x proceso
+router.get('/produccionXProceso/:idProceso', async (req, res) => {
+    const { idProceso } = req.params;
+    const resultadoProceso = await pool.query('SELECT * FROM procesos INNER JOIN ordenproduccion ON procesos.idOP = ordenproduccion.idOP WHERE idProceso = ?', [idProceso]);
+    const proceso = resultadoProceso[0];
+    const producciones = await pool.query('SELECT * FROM produccion INNER JOIN operadores ON produccion.idOperador = operadores.idOperador WHERE idProceso = ?', [idProceso]);
+    for (let i = 0; i < producciones.length; i++) {
+        producciones[i].inicio = moment(producciones[i].inicio).format('DD/MM/YYYY HH:mm');
+        producciones[i].fin = moment(producciones[i].fin).format('DD/MM/YYYY HH:mm');
+    }
+    res.render('procesos/produccionXProceso', { proceso, producciones });
 });
 
 // GET: editar proceso
