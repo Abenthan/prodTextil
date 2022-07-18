@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../database');
 const moment = require('moment');
+const { isLoggedIn } = require('../lib/sesiones');
 
 //GET: procesos de una ordenProduccion
 router.get('/procesosOP/:idOP', async (req, res) => {
@@ -23,6 +24,63 @@ router.get('/produccionXProceso/:idProceso', async (req, res) => {
         producciones[i].fin = moment(producciones[i].fin).format('DD/MM/YYYY HH:mm');
     }
     res.render('procesos/produccionXProceso', { proceso, producciones });
+});
+
+//GET: preProduccion
+router.get('/preProduccion', isLoggedIn, async (req, res) => {
+    const ordenesProduccion = await pool.query('SELECT * FROM ordenProduccion WHERE estadoOP != ?', ['Terminado']);
+    const llamante = 'preProduccion';
+    res.render('ordenProduccion/listarOP', { ordenesProduccion, llamante });
+});
+
+//GET: preProduccion/:idProceso
+router.get('/preProduccion/:idOP', async (req, res) => {
+    const { idOP } = req.params;
+    consulta = ('SELECT * FROM procesos' +
+    ' INNER JOIN ordenproduccion ON procesos.idOP = ordenproduccion.idOP' +
+    ' WHERE procesos.idOP = ' + idOP + 
+    ' AND nombreProceso = "preProduccion"');
+    const resultadoProceso = await pool.query(consulta);
+    
+    const proceso = resultadoProceso[0];
+    res.render('procesos/preProduccion', { proceso });
+});
+
+// POST: preProduccion
+router.post('/preProduccion/:idProceso', async (req, res) => {
+
+    const { idProceso } = req.params;
+    const proceso = {
+        estadoProceso: req.body.estado,
+        observacionesProceso: req.body.observaciones
+    };
+
+    //actualizamos el proceso
+    await pool.query('UPDATE procesos SET ? WHERE idProceso = ?', [proceso, idProceso]);
+
+    const resultadoProceso = await pool.query('SELECT * FROM procesos WHERE idProceso = ?', [idProceso]);
+
+    // Actualizamos el estado en telares
+    if(proceso.estadoProceso == "Terminado"){ 
+        //actualizar estado de telares a "en cola"
+        await pool.query('UPDATE procesos SET estadoProceso = "en Cola" WHERE idOP = ? AND nombreProceso LIKE ?', [resultadoProceso[0].idOP, '%telar%']);
+
+        // actualizamos el estado de la OP
+        await pool.query('UPDATE ordenproduccion SET estadoOP = "en Proceso" WHERE idOP = ?', [resultadoProceso[0].idOP]);
+
+    }else{
+        //actualizar estado de telares a "pendiente" 
+        await pool.query('UPDATE procesos SET estadoProceso = "Pendiente" WHERE idOP = ? AND nombreProceso LIKE ?', [resultadoProceso[0].idOP, '%telar%']);
+
+        // actualizamos el estado de la OP
+        await pool.query('UPDATE ordenproduccion SET estadoOP = "Pendiente" WHERE idOP = ?', [resultadoProceso[0].idOP]);
+    }
+
+
+    req.flash('success', 'Proceso actualizado correctamente');
+
+    res.redirect('/procesos/preProduccion/' + resultadoProceso[0].idOP);
+
 });
 
 // GET: editar proceso
@@ -68,48 +126,5 @@ router.post('/editarProceso/:idProceso', async (req, res) => {
 
 });
 
-//GET: preProduccion
-router.get('/preProduccion/:idProceso', async (req, res) => {
-    const { idProceso } = req.params;
-    const resultadoProceso = await pool.query('SELECT * FROM procesos INNER JOIN ordenproduccion ON procesos.idOP = ordenproduccion.idOP WHERE idProceso = ?', [idProceso]);
-    const proceso = resultadoProceso[0];
-    res.render('procesos/preProduccion', { proceso });
-});
 
-// POST: preProduccion
-router.post('/preProduccion/:idProceso', async (req, res) => {
-
-    const { idProceso } = req.params;
-    const proceso = {
-        estadoProceso: req.body.estado,
-        observacionesProceso: req.body.observaciones
-    };
-
-    //actualizamos el proceso
-    await pool.query('UPDATE procesos SET ? WHERE idProceso = ?', [proceso, idProceso]);
-
-    const resultadoProceso = await pool.query('SELECT * FROM procesos WHERE idProceso = ?', [idProceso]);
-
-    // Actualizamos el estado en telares
-    if(proceso.estadoProceso == "Terminado"){ 
-        //actualizar estado de telares a "en cola"
-        await pool.query('UPDATE procesos SET estadoProceso = "en Cola" WHERE idOP = ? AND nombreProceso LIKE ?', [resultadoProceso[0].idOP, '%telar%']);
-
-        // actualizamos el estado de la OP
-        await pool.query('UPDATE ordenproduccion SET estadoOP = "en Proceso" WHERE idOP = ?', [resultadoProceso[0].idOP]);
-
-    }else{
-        //actualizar estado de telares a "pendiente" 
-        await pool.query('UPDATE procesos SET estadoProceso = "Pendiente" WHERE idOP = ? AND nombreProceso LIKE ?', [resultadoProceso[0].idOP, '%telar%']);
-
-        // actualizamos el estado de la OP
-        await pool.query('UPDATE ordenproduccion SET estadoOP = "Pendiente" WHERE idOP = ?', [resultadoProceso[0].idOP]);
-    }
-
-
-    req.flash('success', 'Proceso actualizado correctamente');
-
-    res.redirect('/procesos/preProduccion/' + idProceso);
-
-});
 module.exports = router;

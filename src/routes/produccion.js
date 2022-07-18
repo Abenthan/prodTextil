@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require('../database');
 const moment = require('moment');
 const helpers = require('../lib/helpers');
-const { sesionOperador, sesionOP } = require('../lib/sesiones');
+const { isLoggedIn, sesionOperador, sesionOP } = require('../lib/sesiones');
 
 //GET Inicio
 router.get('/inicio', (req, res) => {
@@ -311,6 +311,7 @@ router.post('/confirmarFinalizacion', async (req, res) => {
     res.redirect('/produccion/inicio');
 
 });
+
 
 // GET despacho
 router.get('/despacho/:idProceso', sesionOperador, sesionOP, async (req, res) => {

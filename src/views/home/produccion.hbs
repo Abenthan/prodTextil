@@ -1,22 +1,28 @@
 <div class="container">
     <div class="row">{{!-- Menu rutas --}}
-        <div class="col">
-            <div>
-                <a href="/home">Home</a>
+        <div class="col d-flex justify-content-end my-1">
+            <div>{{!-- botones --}}
+                <a href="/home" class="btn btn-secondary">Salir&nbsp;<i class="fa-solid fa-right-from-bracket"></i></a>
             </div>
         </div>
+
     </div>
     <div class="row">
-        <div class="col">
+        <div class="col d-flex">
+            <div>
+                <a href="/ordenProduccion/tipoProceso" class="btn btn-outline-info p-2 m-2">Crear Orden de
+                    Produccion</a>
+            </div>
+
+            <div>
+                <a href="/procesos/preProduccion" class="btn btn-outline-info p-2 m-2">Pre-Produccion</a>
+            </div>
+
             <div>
                 <a href="/produccion/inicio" class="btn btn-outline-info p-2 m-2">Produccion</a>
             </div>
 
             {{#if user}}
-            <div>
-                <a href="/ordenProduccion/tipoProceso" class="btn btn-outline-info p-2 m-2">Crear Orden de Produccion</a>
-            </div>
-
             <div>
                 <a href="/ordenProduccion/listarOP" class="btn btn-outline-info p-2 m-2">Listar Ordenes de
                     Produccion</a>

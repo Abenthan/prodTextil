@@ -1,11 +1,22 @@
 <div class="container">
-    {{!-- migas de pan --}}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Inicio</a></li>
-            <li class="breadcrumb-item"><a href="/home/produccion">Menú de Producción</a></li>
-        </ol>
-    </nav>
+    <div class="row">
+        <div class="col d-flex justify-content-between flex-wrap my-1">
+            <div>
+                <nav aria-label="breadcrumb"> {{!-- miga de pan --}}
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/home">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="/home/produccion">Menú de Producción</a></li>
+                    </ol>
+                </nav>
+            </div>
+            <div>{{!-- botones --}}
+                <a href="/home" class="btn btn-secondary">Salir&nbsp;<i class="fa-solid fa-right-from-bracket"></i></a>
+            </div>
+
+
+        </div>
+    </div>
+
     <div class="row">
         <div class="col mx-auto">
             <div>
@@ -17,16 +28,14 @@
                         <tr>
                             <th>Consecutivo</th>
                             <th>Nombre Producción</th>
-                            <th>Cantidad</th>
                             <th>Estado</th>
                         </tr>
                     </thead>
                     <tbody>
                         {{#each ordenesProduccion}}
-                        <tr>
+                        <tr onclick="funcionDestino({{idOP}})">
                             <td>{{consecutivo}}</td>
-                            <td><a href="/procesos/procesosOP/{{idOP}}">{{nombreOP}}</a></td>
-                            <td>{{cantidadOP}}</td>
+                            <td>{{nombreOP}}</td>
                             <td>{{estadoOP}}</td>
                         </tr>
                         {{/each}}
@@ -37,3 +46,13 @@
         </div>
     </div>
 </div>
+<script>
+    const variableLlamante = "{{llamante}}";
+    function funcionDestino(idOP) {
+        if (variableLlamante == "ordenProduccion") {
+            window.location.href = "/procesos/procesosOP/" + idOP;
+        } else if (variableLlamante == "preProduccion") {
+            window.location.href = "/procesos/preProduccion/" + idOP;
+        }
+    }
+</script>

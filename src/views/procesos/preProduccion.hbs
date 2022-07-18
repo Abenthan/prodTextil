@@ -1,23 +1,22 @@
 <div class="container">
-    <div class="row d-flex align-content-between flex-wrap my-1">{{!-- Menu rutas --}}
-        <div class="col">
-            <div class="d-flex"> {{!-- rutas --}}
-                <a href="/home">Menu principal</a>
-                <p> &nbsp; / &nbsp;</p>
-                <a href="/home/Produccion">produccion</a>
-                <p> &nbsp; / &nbsp;</p>
-                <a href="/ordenProduccion/listarOP">Ordenes de produccion</a>
-                <p> &nbsp; / &nbsp;</p>
-                <a href="/procesos/procesosOP/{{proceso.idOP}}">Procesos</a>
+    <div class="row">
+        <div class="col d-flex align-content-between flex-wrap my-1">
+            <div>{{!-- migas de pan --}}
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/home">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="/home/produccion">Menú de Producción</a></li>
+                        <li class="breadcrumb-item"><a href="/procesos/preProduccion">Ordenes de producción</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">preProducción</li>
+
+                    </ol>
+                </nav>
+            </div>
+            <div class="col d-flex justify-content-end"> {{!-- Botones --}}
+                <a href="/home" class="btn btn-secondary">Salir&nbsp;<i class="fa-solid fa-right-from-bracket"></i></a>
             </div>
         </div>
-
-        <div class="col d-flex justify-content-end"> {{!-- Botones --}}
-            <a href="/home" class="btn btn-secondary">Salir&nbsp;<i class="fa-solid fa-right-from-bracket"></i></a>
-
-        </div>
     </div>
-
     <div class="row">
         <div class="col-md-6 mx-auto">
             <div class="card">
@@ -53,7 +52,7 @@
                         <div class="form-group mb-2">{{!-- Observaciones --}}
                             <label for="observaciones">Observaciones</label>
                             <textarea name="observaciones" class="form-control"
-                                id="observaciones">{{proceso.observacionesProceso}}</textarea>
+                                id="observaciones" rows="1">{{proceso.observacionesProceso}}</textarea>
                         </div>
 
                     </div>
@@ -71,16 +70,4 @@
     </div>
 </div>
 
-<script>
-    const tx = document.getElementsByTagName("textarea");
-    for (let i = 0; i < tx.length; i++) {
-        tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
-        tx[i].addEventListener("input", OnInput, false);
-    }
-
-    function OnInput() {
-        this.style.height = "auto";
-        this.style.height = (this.scrollHeight) + "px";
-    }
-
-</script>
+<script src="/js/textareaAutomatico.js"></script>

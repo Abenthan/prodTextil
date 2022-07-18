@@ -1,12 +1,25 @@
 <div class="container">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/home">Inicio</a></li>
-            <li class="breadcrumb-item"><a href="/home/produccion">Menú de Producción</a></li>
-            <li class="breadcrumb-item"><a href="/ordenProduccion/listarOP">Ordenes de producción</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Procesos</li>
-        </ol>
-    </nav>
+    <div class="row">
+        <div class="col d-flex justify-content-between flex-wrap my-1">
+            <div>{{!-- miga de pan --}}
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/home">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="/home/produccion">Menú de Producción</a></li>
+                        <li class="breadcrumb-item"><a href="/ordenProduccion/listarOP">Ordenes de producción</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Procesos</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div>{{!-- botones --}}
+                <a href="/home" class="btn btn-secondary">Salir&nbsp;<i
+                    class="fa-solid fa-right-from-bracket"></i></a>
+            </div>
+
+        </div>
+    </div>
+
 
     <div class="row">
         <div class="col mx-auto">

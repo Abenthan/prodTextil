@@ -1,16 +1,22 @@
 <div class="container">
     <div class="row">
-        <div class="col">
-            {{!-- miga de pan --}}
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/home">Inicio</a></li>
-                    <li class="breadcrumb-item"><a href="/home/produccion">Menú de Producción</a></li>
-                    <li class="breadcrumb-item"><a href="/ordenProduccion/listarOP">Ordenes de producción</a></li>
-                    <li class="breadcrumb-item"><a href="/procesos/procesosOP/{{proceso.idOP}}">Procesos</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Producción por proceso</li>
-                </ol>
-            </nav>
+        <div class="col d-flex justify-content-between flex-wrap my-1">
+            <div>{{!-- miga de pan --}}
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/home">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="/home/produccion">Menú de Producción</a></li>
+                        <li class="breadcrumb-item"><a href="/ordenProduccion/listarOP">Ordenes de producción</a></li>
+                        <li class="breadcrumb-item"><a href="/procesos/procesosOP/{{proceso.idOP}}">Procesos</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Producción por proceso</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div>{{!-- botones --}}
+                <a href="/home" class="btn btn-secondary">Salir&nbsp;<i
+                        class="fa-solid fa-right-from-bracket"></i></a>
+            </div>
         </div>
     </div>
     {{!-- titulo --}}
@@ -46,7 +52,7 @@
                     </tr>
                     <script>
                         //si hay observaciones poner ver
-                        if ({{observaciones}} != "") {
+                        if ({{ observaciones }} != "") {
                             document.getElementById("tdObservaciones_{{idProduccion}}").innerHTML = "<a href='#'>Ver</a>";
                         }
                     </script>

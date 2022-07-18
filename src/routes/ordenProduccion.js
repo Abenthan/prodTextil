@@ -165,7 +165,8 @@ router.post('/crear', async (req, res) => {
 //GET: listarOP con estado diferente a 'Terminado'
 router.get('/listarOP', async (req, res) => {
     const ordenesProduccion = await pool.query('SELECT * FROM ordenProduccion WHERE estadoOP != ?', ['Terminado']);
-    res.render('ordenProduccion/listarOP', { ordenesProduccion });
+    const llamante = 'ordenProduccion';
+    res.render('ordenProduccion/listarOP', { ordenesProduccion, llamante });
 });
 
 module.exports = router;
