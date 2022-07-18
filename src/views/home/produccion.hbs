@@ -9,6 +9,7 @@
     </div>
     <div class="row">
         <div class="col d-flex">
+            {{#if user}}
             <div>
                 <a href="/ordenProduccion/tipoProceso" class="btn btn-outline-info p-2 m-2">Crear Orden de
                     Produccion</a>
@@ -17,6 +18,7 @@
             <div>
                 <a href="/procesos/preProduccion" class="btn btn-outline-info p-2 m-2">Pre-Produccion</a>
             </div>
+            {{/if}}
 
             <div>
                 <a href="/produccion/inicio" class="btn btn-outline-info p-2 m-2">Produccion</a>

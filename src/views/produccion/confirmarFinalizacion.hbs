@@ -36,8 +36,8 @@
 
                         <div class="form-group py-2 my-2"> {{!-- cantidad --}}
                             <label for="cantidad">Cantidad</label>
-                            <input type="text" name="cantidad" class="form-control" id="cantidad"
-                                value="{{produccion.cantidadIN}}">
+                            <input type="text" name="cantidad" class="form-control" id="cantidad" onfocus="this.select()"
+                                value="{{produccion.cantidadIN}}" autofocus>
                         </div>
 
                         <script> // convierte de metros a unidades
