@@ -3,7 +3,8 @@ module.exports = {
         if (req.isAuthenticated()) {
             return next();
         }
-        return res.redirect('/login');
+        req.flash('message', 'Debes iniciar sesión');
+        return res.redirect('/home');
     },
 
     isNotLoggedIn(req, res, next) {

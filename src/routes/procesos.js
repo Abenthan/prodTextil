@@ -34,7 +34,7 @@ router.get('/preProduccion', isLoggedIn, async (req, res) => {
 });
 
 //GET: preProduccion/:idProceso
-router.get('/preProduccion/:idOP', async (req, res) => {
+router.get('/preProduccion/:idOP', isLoggedIn ,async (req, res) => {
     const { idOP } = req.params;
     consulta = ('SELECT * FROM procesos' +
     ' INNER JOIN ordenproduccion ON procesos.idOP = ordenproduccion.idOP' +

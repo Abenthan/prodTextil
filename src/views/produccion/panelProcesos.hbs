@@ -31,7 +31,7 @@
                     <tbody id="tbody_procesos">
                         {{#each procesos}}
                         <script>
-                            if ("{{estadoProceso}}" == "en Cola") {
+                            if ("{{estadoProceso}}" == "en Cola" || "{{estadoProceso}}" == "en Proceso") {
                                 if ("{{nombreProceso}}" == "despacho") {
                                     var fila = document.createElement("tr");
                                     fila.innerHTML = '<td>{{nombreProceso}}</td>';

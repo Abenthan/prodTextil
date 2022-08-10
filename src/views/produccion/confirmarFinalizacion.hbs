@@ -34,10 +34,18 @@
                                 value="{{proceso.nombreProceso}}" readonly>
                         </div>
 
+                        {{#if validaciones.especificaciones}}
+                        <div class="form-group py-2 my-2"> {{!-- especificaciones --}}
+                            <label for="especificaciones">Especificaciones</label>
+                            <input type="text" name="especificaciones" class="form-control" id="especificaciones"
+                                value="{{produccion.especificaciones}}" readonly>
+                        </div>
+                        {{/if}}
+
                         <div class="form-group py-2 my-2"> {{!-- cantidad --}}
                             <label for="cantidad">Cantidad</label>
-                            <input type="text" name="cantidad" class="form-control" id="cantidad" onfocus="this.select()"
-                                value="{{produccion.cantidadIN}}" autofocus>
+                            <input type="text" name="cantidad" class="form-control" id="cantidad"
+                                onfocus="this.select()" value="{{produccion.cantidadIN}}" autofocus>
                         </div>
 
                         <script> // convierte de metros a unidades
@@ -46,17 +54,17 @@
                             if ("{{proceso.tipoProceso}}" == "1" && "{{proceso.nombreProceso}}" == "corte") {
                                 console.log("entro");
                                 var largo = Number({{ proceso.largo }});
-                            var metros = Number({{ proceso.cantidadIN }});
+                            var metros = Number({{ produccion.cantidadIN }});
                             var unidades = parseInt(metros * 1000 / largo);
                             document.getElementById("cantidad").value = unidades;
                             }
 
                         </script>
-
+                        
                         {{#if validaciones.observaciones}}
                         <div class="form-group py-2 my-2"> {{!-- observaciones --}}
                             <label for="observaciones">Observaciones</label>
-                            <textarea name="observaciones" class="form-control" rows="2"
+                            <textarea name="observaciones" class="form-control" rows="1"
                                 placeholder="Observaciones">{{produccion.observaciones}}</textarea>
                         </div>
                         {{/if}}
@@ -69,7 +77,7 @@
                         <input type="hidden" name="tipoProceso" value="{{proceso.tipoProceso}}">
                         <input type="hidden" name="ordenRuta" value="{{proceso.ordenRuta}}">
                         <input type="hidden" name="cantidadEnCola" value="{{proceso.cantidadEnCola}}">
-                        <input type="hidden" name="cantidadIN_Proceso" value="{{proceso.cantidadIN}}">
+                        <input type="hidden" name="cantidadOUT_Proceso" value="{{proceso.cantidadOUT}}">
 
                         <div class="form-group py-2 my-2 d-flex justify-content-center"> {{!-- boton confirmar --}}
                             <button type="submit" class="btn btn-success">Confirmar</button>
@@ -81,20 +89,4 @@
         </div>
     </div>
 </div>
-<script>
-    const tx = document.getElementsByTagName("textarea");
-    if (tx.length > 0) {
-
-        for (let i = 0; i < tx.length; i++) {
-            tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
-            tx[i].addEventListener("input", OnInput, false);
-        }
-
-        function OnInput() {
-            this.style.height = "auto";
-            this.style.height = (this.scrollHeight) + "px";
-        }
-
-    }
-
-</script>
+<script src="/js/textareaAutomatico.js"></script>
