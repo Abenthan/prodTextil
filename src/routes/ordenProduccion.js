@@ -3,6 +3,7 @@ const router = express.Router();
 const pool = require('../database');
 const helpers = require('../lib/helpers');
 const moment = require('moment');
+const { isLoggedIn} = require('../lib/sesiones');
 
 // GET: tipoProceso
 router.get('/tipoProceso', async (req, res) => {
@@ -15,6 +16,8 @@ router.post('/tipoProceso', async (req, res) => {
     const { tipoProceso } = req.body;
     if(tipoProceso == '1'){
         res.redirect('/ordenProduccion/tejido');
+    }else if(tipoProceso == '4'){
+        res.redirect('/ordenProduccion/garras');
     }else{
         res.redirect('/ordenProduccion/crear');
     }
@@ -22,9 +25,15 @@ router.post('/tipoProceso', async (req, res) => {
 });
 
 //GET: tejido
-router.get('/tejido', async (req, res) => {
+router.get('/tejido', isLoggedIn, async (req, res) => {
     const fecha = moment().format('YYYY-MM-DD');
     res.render('ordenProduccion/tejido', {fecha});
+});
+
+//GET: garras
+router.get('/garras', isLoggedIn, async (req, res) => {
+    const fecha = moment().format('YYYY-MM-DD');
+    res.render('ordenProduccion/garras', {fecha});
 });
 
 //GET: crear
@@ -34,7 +43,9 @@ router.get('/crear', (req, res) => {
 });
 
 //POST: crear
-router.post('/crear', async (req, res) => {
+router.post('/crear', isLoggedIn, async (req, res) => {
+    // mostrar por consola fecha, hora y usuario;
+    console.log('usuario: ', req.user.username, ' ', moment().format('YYYY-MM-DD HH:mm:ss'));
     const datosOP = {
         nombreOP: req.body.nombreOP,
         consecutivo: req.body.consecutivo,
@@ -49,6 +60,11 @@ router.post('/crear', async (req, res) => {
         datosOP.largo = req.body.largo;
     }
 
+    if(datosOP.tipoProceso == '4'){
+        datosOP.tamaños = req.body.tamaños;
+    }
+
+    
     // buscamos si existe el consucutivo
     const op = await pool.query('SELECT * FROM ordenProduccion WHERE consecutivo = ?', [datosOP.consecutivo]);
 
@@ -59,36 +75,40 @@ router.post('/crear', async (req, res) => {
         if (datosOP.tipoProceso != '') {
             const tejido = ['diseño', 'ordenProduccion', 'preProduccion', 'telar1', 'telar2', 'telar4', 'telar5', 'telar6',
                 'enrrollado', 'planchado', 'corte', 'inspeccion', 'despacho'];
-            const flexo = ['preprensa', 'preproduccion', 'impresion', 'corte'];
-            const transfer = ['preprensa', 'preproduccion', 'impresion', 'screen', 'revision', 'corteLineal', 'corteUnitario', 'rollos', 'empaque'];
-            const garras = ['preprensa', 'preproduccion', 'screen', 'repujado', 'troquelado', 'empaque', 'despacho'];
-
-            const procesosOP = [];
-
-            var ordenRuta = 0;
-            var primerProceso = 0;
+            const flexo = ['preprensa', 'preProduccion', 'impresion', 'corte'];
+            const transfer = ['preprensa', 'preProduccion', 'impresion', 'screen', 'revision', 'corteLineal', 'corteUnitario', 'rollos', 'empaque'];
+            const garras = ['diseño', 'ordenProduccion', 'preProduccion', 'cutex', 'guillotina', 'screen', 'repujado', 'troquelado', 'empaque',
+             'inspeccion', 'despacho'];
 
             // creamos array de procesosOP
+
+            function agregarProcesos(proceso){
+                procesosOP = [];
+                var ordenRuta = 0;
+                for (let i = 0; i < proceso.length; i++) {
+                    if (req.body[proceso[i]]) {
+                        ordenRuta++;
+                        cantidad = 0;
+                        procesosOP.push({ 
+                            nombreProceso: proceso[i],
+                            ordenRuta: ordenRuta,
+                            medidaIN: helpers.unidadesMedida(datosOP.tipoProceso, proceso[i]).in,
+                            cantidadIN: cantidad,
+                            medidaOUT: helpers.unidadesMedida(datosOP.tipoProceso, proceso[i]).out,
+                            cantidadOUT: cantidad,
+                            estadoProceso: 'Pendiente',
+                            observacionesProceso: ''
+                        });
+                    }
+                }
+
+            }
+
             switch (datosOP.tipoProceso) {
                 case '1': // tejido
-                    for (let i = 0; i < tejido.length; i++) {
-                        if (req.body[tejido[i]]) {
-                            ordenRuta++;
-                            cantidad = 0;
-                            procesosOP.push({ 
-                                nombreProceso: tejido[i],
-                                ordenRuta: ordenRuta,
-                                medidaIN: helpers.unidadesMedida(datosOP.tipoProceso, tejido[i]).in,
-                                cantidadIN: cantidad,
-                                medidaOUT: helpers.unidadesMedida(datosOP.tipoProceso, tejido[i]).out,
-                                cantidadOUT: cantidad,
-                                estadoProceso: 'Pendiente',
-                                observacionesProceso: ''
-                            });
-                        }
-                    }
+                    agregarProcesos(tejido);    
                     break;
-
+                    
                 case '2': //Flexo
                     for (let i = 0; i < flexo.length; i++) {
                         if (req.body[flexo[i]]) {
@@ -111,13 +131,7 @@ router.post('/crear', async (req, res) => {
                     break;
 
                 case '4': //Garras
-                    for (let i = 0; i < garras.length; i++) {
-                        if (req.body[garras[i]]) {
-                            ordenRuta++;
-                            cantidad = 0;
-                            procesosOP.push({ nombreProceso: garras[i], ordenRuta: ordenRuta, cantidadProceso: cantidad, estadoProceso: 'Pendiente' });
-                        }
-                    }
+                    agregarProcesos(garras);
                     break;
 
                 default:
@@ -135,7 +149,7 @@ router.post('/crear', async (req, res) => {
 
             // insertamos procesosOP en procesos
             for (let i = 0; i < procesosOP.length; i++) {
-                const resultadoProceso = await pool.query('INSERT INTO procesos SET ?', [procesosOP[i]]);
+                await pool.query('INSERT INTO procesos SET ?', [procesosOP[i]]);
 
             }
 
@@ -166,7 +180,6 @@ router.post('/crear', async (req, res) => {
 router.get('/listarOP', async (req, res) => {
     const ordenesProduccion = await pool.query('SELECT * FROM ordenProduccion');
     const llamante = 'ordenProduccion';
-    console.log(ordenesProduccion);
     res.render('ordenProduccion/listarOP', { ordenesProduccion, llamante });
 });
 

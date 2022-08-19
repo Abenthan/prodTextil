@@ -19,7 +19,7 @@ function checkbox(checkbox) {
 
 //invocar funcion checkbox
 
-
+/* 
 
 tipoProceso.addEventListener('change', function () {
     // obtengo el valor del tipoProceso
@@ -113,5 +113,5 @@ tipoProceso.addEventListener('change', function () {
             break;
     }
     
-});
+}); */
 

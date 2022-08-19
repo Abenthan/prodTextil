@@ -24,7 +24,7 @@ helpers.unidadesMedida = (tipoProceso, nombreProceso) => {
             switch (nombreProceso) {
                 case 'preProduccion':
                     unidadesDeMedida.in = 'indefinido';
-                    unidadesDeMedida.out = 'matrices';
+                    unidadesDeMedida.out = 'indefinido';
                     break;
                 case 'telar1':
                     unidadesDeMedida.in = 'indefinido';
@@ -77,6 +77,59 @@ helpers.unidadesMedida = (tipoProceso, nombreProceso) => {
             break;
         case '3':
             break;
+
+        case '4':
+            switch (nombreProceso) {
+                case 'diseño':                    
+                    unidadesDeMedida.in = 'indefinido';
+                    unidadesDeMedida.out = 'indefinido';
+                    break;
+                case 'ordenProduccion':
+                    unidadesDeMedida.in = 'indefinido';
+                    unidadesDeMedida.out = 'indefinido';
+                    break;
+                case 'preProduccion':
+                    unidadesDeMedida.in = 'indefinido';
+                    unidadesDeMedida.out = 'indefinido';
+                    break;
+                case 'cutex':
+                    unidadesDeMedida.in = 'metros';
+                    unidadesDeMedida.out = 'tamaños';
+                    break;
+                case 'guillotina':
+                    unidadesDeMedida.in = 'metros';
+                    unidadesDeMedida.out = 'tamaños';
+                    break;
+                case 'screen':
+                    unidadesDeMedida.in = 'tamaños';
+                    unidadesDeMedida.out = 'tamaños';
+                    break;
+                case 'repujado':
+                    unidadesDeMedida.in = 'tamaños';
+                    unidadesDeMedida.out = 'tamaños';
+                    break;
+                case 'troquelado':
+                    unidadesDeMedida.in = 'tamaños';
+                    unidadesDeMedida.out = 'unidades';
+                    break;
+                case 'empaque':
+                    unidadesDeMedida.in = 'unidades';
+                    unidadesDeMedida.out = 'unidades';
+                    break;
+                case 'inspeccion':
+                    unidadesDeMedida.in = 'unidades';
+                    unidadesDeMedida.out = 'unidades';
+                    break;  
+                case 'despacho':
+                    unidadesDeMedida.in = 'unidades';
+                    unidadesDeMedida.out = 'unidades';
+                    break;
+                default:
+                    unidadesDeMedida.in = 'indefinido';
+                    unidadesDeMedida.out = 'indefinido';
+            };
+            break;
+
         default:
     };
 

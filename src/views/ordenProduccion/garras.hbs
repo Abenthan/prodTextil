@@ -1,0 +1,91 @@
+<div class="container">
+    <div class="row d-flex"> <!-- Menu rutas -->
+        <div class="col">
+            <div>{{!-- migas de pan --}}
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/home">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="/home/produccion">Menú Producción</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Crear Orden de Producción</li>
+                    </ol>
+                </nav>
+            </div>
+
+        </div>
+
+        <div class="col d-flex justify-content-end p-1"> {{!-- Botones --}}
+            <a href="/home/produccion" class="btn btn-secondary">Salir&nbsp;<i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="text-center"> {{!-- titulo --}}
+                <h4>Crear Orden de Produccion <strong><i>Garras</i></strong></h4>
+            </div>
+
+            <form action="/ordenProduccion/crear" method="post"><!-- Formulario -->
+
+                <div class="form-group my-2"><!-- consecutivo -->
+                    <label for="consecutivo">Consecutivo:</label>
+                    <input type="text" class="form-control" id="consecutivo" name="consecutivo"
+                        placeholder="Numero de la Orden de Produccion" required autofocus>
+                </div>
+
+                <div class="form-group my-2"><!-- Nombre -->
+                    <label for="nombreOP">Nombre:</label>
+                    <input type="text" class="form-control" id="nombreOP" name="nombreOP"
+                        placeholder="Nombre de la Orden de Produccion" required>
+                </div>
+
+                <div class="form-group my-2"><!-- cantidadPedida -->
+                    <label for="cantidadPedida">Cantidad pedida:</label>
+                    <input type="number" class="form-control" id="cantidadPedida" name="cantidadPedida" placeholder="Cantidad Pedida" required>
+                </div>
+
+                <div class="form-group my-2"><!-- cantidadProgramada -->
+                    <label for="cantidadProgramada">Cantidad programada:</label>
+                    <input type="number" class="form-control" id="cantidadProgramada" name="cantidadProgramada" placeholder="Cantidad Programada" required>
+                </div>
+                <div class="form-group my-2"><!-- Tamaños -->
+                    <label for="tamaños">Tamaños:</label>
+                    <input type="number" class="form-control" id="tamaños" name="tamaños" placeholder="Tamaños" required>
+                </div>
+
+                <div class="form-group my-2"> <!-- fecha -->
+                    <label for="fecha">Fecha:</label>
+                    <input type="date" class="form-control" id="fecha" name="fecha" placeholder="Fecha"
+                        value="{{fecha}}" required>
+                </div>
+
+                <div class="form-check form-switch my-2"><!-- Procesos -->
+                    <ul id="procesos" style="list-style:none">
+                        <li><input class="form-check-input" type="hidden" id="diseño" name="diseño" value="on"></li>
+                        <li><input class="form-check-input" type="hidden" id="ordenProduccion" name="ordenProduccion" value="on"></li>
+                        <li><input class="form-check-input" type="checkbox" onclick="checkbox(this)" id="preProduccion" name="preProduccion" checked><label id="preProduccionLabel" for="preProduccion">preProduccion</label></li>
+                        <li><input class="form-check-input" type="checkbox" onclick="checkbox(this)" id="cutex" name="cutex" checked><label id="cutexLabel" for="cutex">Cutex</label></li>
+                        <li><input class="form-check-input" type="checkbox" onclick="checkbox(this)" id="guillotina" name="guillotina" checked><label id="guillotinaLabel" for="guillotina">Guillotina</label></li>
+                        <li><input class="form-check-input" type="checkbox" onclick="checkbox(this)" id="screen" name="screen" checked><label id="screenLabel" for="screen">Screen</label></li>
+                        <li><input class="form-check-input" type="checkbox" onclick="checkbox(this)" id="repujado" name="repujado" checked><label id="repujadoLabel" for="repujado">Repujado</label></li>
+                        <li><input class="form-check-input" type="checkbox" onclick="checkbox(this)" id="troquelado" name="troquelado" checked><label id="troqueladoLabel" for="troquelado">Troquelado</label></li>
+                        <li><input class="form-check-input" type="checkbox" onclick="checkbox(this)" id="empaque" name="empaque" checked><label id="empaqueLabel" for="empaque">Empaque</label></li>
+                        <li><input class="form-check-input" type="checkbox" onclick="checkbox(this)" id="despacho" name="despacho" checked><label id="despachoLabel" for="despacho">Despacho</label></li>
+                    </ul>
+                </div>
+
+                {{!-- ocultos --}}
+                <input type="hidden" id="tipoProceso" name="tipoProceso" value="4">
+
+                <div class="form-group my-2 text-center"> {{!-- Guardar --}}
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i>&nbsp;Guardar</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script src="/ordenProduccion/js/rutaProceso.js"></script>
