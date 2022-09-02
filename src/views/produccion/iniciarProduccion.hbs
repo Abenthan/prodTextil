@@ -30,7 +30,7 @@
                         <div class="form-group d-flex">
                             <div class="m-2"> {{!-- cantidadIN --}}
                                 <label for="cantidadIN">Cantidad Inicial</label>
-                                <input type="number" name="cantidadIN" class="form-control"
+                                <input type="number" name="cantidadIN" class="form-control" onfocus="this.select()"
                                     value={{proceso.cantidadEnCola}} autofocus>
                             </div>
                             <div class="m-2"> {{!-- medidaIN --}}
@@ -82,8 +82,9 @@
                         {{/if}}
 
                         {{!-- idOP, idProceso e idProduccion ocultos --}}
-                        <input type="hidden" name="idProceso" value="{{produccion.idProceso}}">
                         <input type="hidden" name="nombreProceso" value="{{proceso.nombreProceso}}">
+                        <input type="hidden" name="cantidadIN_proceso" value="{{proceso.cantidadIN}}">
+                        <input type="hidden" name="cantidadEnCola" value="{{proceso.cantidadEnCola}}">
 
                         <div class="form-group py-2 my-2 d-flex justify-content-center"> {{!-- boton confirmar --}}
                             <button type="submit" class="btn btn-success">Iniciar</button>

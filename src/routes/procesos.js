@@ -58,24 +58,58 @@ router.post('/preProduccion/:idProceso', async (req, res) => {
     //actualizamos el proceso
     await pool.query('UPDATE procesos SET ? WHERE idProceso = ?', [proceso, idProceso]);
 
-    const resultadoProceso = await pool.query('SELECT * FROM procesos WHERE idProceso = ?', [idProceso]);
+    const consultaProceso = 'SELECT procesos.idOP, procesos.ordenRuta, procesos.estadoProceso FROM procesos' +
+    ' INNER JOIN ordenproduccion ON procesos.idOP = ordenproduccion.idOP' +
+    ' WHERE procesos.idProceso = ' + idProceso;
+    const resultadoProceso = await pool.query(consultaProceso);
+    const procesoActualizado = resultadoProceso[0];
 
-    // Actualizamos el estado en telares
-    if(proceso.estadoProceso == "Terminado"){ 
-        //actualizar estado de telares a "en cola"
-        await pool.query('UPDATE procesos SET estadoProceso = "en Cola" WHERE idOP = ? AND nombreProceso LIKE ?', [resultadoProceso[0].idOP, '%telar%']);
+    if (procesoActualizado.tipoProceso == '1') {
+        // Actualizamos el estado en telares
+        if(procesoActualizado.estadoProceso == "Terminado"){ 
+            //actualizar estado de telares a "en cola"
+            await pool.query('UPDATE procesos SET estadoProceso = "en Cola" WHERE idOP = ? AND nombreProceso LIKE ?', [resultadoProceso[0].idOP, '%telar%']);
+    
+            // actualizamos el estado de la OP
+            await pool.query('UPDATE ordenproduccion SET estadoOP = "en Proceso" WHERE idOP = ?', [resultadoProceso[0].idOP]);
+    
+        }else{
+            //actualizar estado de telares a "pendiente" 
+            await pool.query('UPDATE procesos SET estadoProceso = "Pendiente" WHERE idOP = ? AND nombreProceso LIKE ?', [resultadoProceso[0].idOP, '%telar%']);
+    
+            // actualizamos el estado de la OP
+            await pool.query('UPDATE ordenproduccion SET estadoOP = "Pendiente" WHERE idOP = ?', [resultadoProceso[0].idOP]);
+        }
+    } else {
+        //cual es el siguiente proceso?
+        const siguienteProceso = Number(procesoActualizado.ordenRuta) + 1;
 
-        // actualizamos el estado de la OP
-        await pool.query('UPDATE ordenproduccion SET estadoOP = "en Proceso" WHERE idOP = ?', [resultadoProceso[0].idOP]);
+        // si estadoProceso = terminado
+        console.log(procesoActualizado.estadoProceso);
+        if (procesoActualizado.estadoProceso == "Terminado") {
+            //actualizar estado del siguiente proceso a "en cola"
+            const consultaUpdateSiguienteProceso = 'UPDATE procesos' +
+            ' SET estadoProceso = "en Cola"' +
+            ' WHERE idOP = ' + procesoActualizado.idOP +
+            ' AND ordenRuta = ' + siguienteProceso;
+            await pool.query(consultaUpdateSiguienteProceso);
 
-    }else{
-        //actualizar estado de telares a "pendiente" 
-        await pool.query('UPDATE procesos SET estadoProceso = "Pendiente" WHERE idOP = ? AND nombreProceso LIKE ?', [resultadoProceso[0].idOP, '%telar%']);
+            // actualizamos el estado de la OP
+            await pool.query('UPDATE ordenproduccion SET estadoOP = "en Proceso" WHERE idOP = ?', [procesoActualizado.idOP]);
+        } else {
+            //actualizar estado del siguiente proceso a "pendiente"
+            const consultaUpdateSiguienteProceso = 'UPDATE procesos' +
+            ' SET estadoProceso = "Pendiente"' +
+            ' WHERE idOP = ' + procesoActualizado.idOP +
+            ' AND ordenRuta = ' + siguienteProceso;
+            await pool.query(consultaUpdateSiguienteProceso);
 
-        // actualizamos el estado de la OP
-        await pool.query('UPDATE ordenproduccion SET estadoOP = "Pendiente" WHERE idOP = ?', [resultadoProceso[0].idOP]);
+            // actualizamos el estado de la OP
+            await pool.query('UPDATE ordenproduccion SET estadoOP = "Pendiente" WHERE idOP = ?', [procesoActualizado.idOP]);
+        }
+
+
     }
-
 
     req.flash('success', 'Proceso actualizado correctamente');
 

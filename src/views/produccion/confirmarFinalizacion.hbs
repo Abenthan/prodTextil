@@ -42,25 +42,49 @@
                         </div>
                         {{/if}}
 
-                        <div class="form-group py-2 my-2"> {{!-- cantidad --}}
-                            <label for="cantidad">Cantidad</label>
-                            <input type="text" name="cantidad" class="form-control" id="cantidad"
-                                onfocus="this.select()" value="{{produccion.cantidadIN}}" autofocus>
+                        <div class="form-group d-flex"> {{!-- cantidad --}}
+                            <div class="m-2">
+                                <label for="cantidad">Cantidad</label>
+                                <input type="text" name="cantidad" class="form-control" id="cantidad"
+                                    onfocus="this.select()" value="{{produccion.cantidadIN}}" autofocus>
+                            </div>
+                            <div class="m-2">
+                                <label for="medidaOUT">Unidad de Medida</label>
+                                <input type="text" name="medidaOUT" class="form-control" id="medidaOUT"
+                                    value="{{proceso.medidaOUT}}" readonly>
+                            </div>
                         </div>
 
-                        <script> // convierte de metros a unidades
-
-                            console.log("{{proceso.tipoProceso}}" + " {{proceso.nombreProceso}}");
+                        <script> // convierte de metros a unidades o tamaños
+                            var cantidadIN = Number({{produccion.cantidadIN}});
+                            var unidades = 0;
                             if ("{{proceso.tipoProceso}}" == "1" && "{{proceso.nombreProceso}}" == "corte") {
                                 console.log("entro");
                                 var largo = Number({{ proceso.largo }});
                             var metros = Number({{ produccion.cantidadIN }});
-                            var unidades = parseInt(metros * 1000 / largo);
+                            unidades = parseInt(metros * 1000 / largo);
                             document.getElementById("cantidad").value = unidades;
                             }
 
+                            if ("{{proceso.tipoProceso}}" == "4") {
+                                
+                                if ("{{proceso.nombreProceso}}" == "cutex" || "{{proceso.nombreProceso}}" == "guillotina") {
+                                    var corte = Number({{ proceso.corte }}) /1000;
+                                    if (cantidadIN > 0 && corte > 0) {
+                                        tamaños = parseInt(cantidadIN / corte);
+                                        document.getElementById("cantidad").value = tamaños;
+                                    } else {
+                                        document.getElementById("cantidad").value = 0;
+                                    }
+                                } else if("{{proceso.nombreProceso}}" == "troquelado"){
+                                    var unidadesXTamaño = Number({{proceso.unidadesXTamaño}});
+                                    unidades = cantidadIN * unidadesXTamaño;
+                                    document.getElementById("cantidad").value = unidades;
+                                }
+                            }
+
                         </script>
-                        
+
                         {{#if validaciones.observaciones}}
                         <div class="form-group py-2 my-2"> {{!-- observaciones --}}
                             <label for="observaciones">Observaciones</label>
@@ -77,7 +101,10 @@
                         <input type="hidden" name="tipoProceso" value="{{proceso.tipoProceso}}">
                         <input type="hidden" name="ordenRuta" value="{{proceso.ordenRuta}}">
                         <input type="hidden" name="cantidadEnCola" value="{{proceso.cantidadEnCola}}">
+                        <input type="hidden" name="cantidadIN_Proceso" value="{{proceso.cantidadIN}}">
                         <input type="hidden" name="cantidadOUT_Proceso" value="{{proceso.cantidadOUT}}">
+                        <input type="hidden" name="cantidadIN_Produccion" value="{{produccion.cantidadIN}}">
+
 
                         <div class="form-group py-2 my-2 d-flex justify-content-center"> {{!-- boton confirmar --}}
                             <button type="submit" class="btn btn-success">Confirmar</button>

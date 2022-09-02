@@ -62,6 +62,8 @@ router.post('/crear', isLoggedIn, async (req, res) => {
 
     if(datosOP.tipoProceso == '4'){
         datosOP.tamaños = req.body.tamaños;
+        datosOP.corte = req.body.corte;
+        datosOP.unidadesXTamaño = req.body.unidadesXTamaño
     }
 
     
